@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>INKDROP</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#0d0d10;--surface:#13131a;--card:#1c1c26;--border:#2e2e3e;
+  --muted:#64648a;--text:#e8e8f2;--sub:#9898b8;
+  --accent:#ff4d6d;--accent2:#7c3aed;--green:#22c55e;--yellow:#f59e0b;
+  --radius:12px;--shadow:0 4px 24px rgba(0,0,0,.45);
+}
+[data-theme="light"]{
+  --bg:#f0f0f6;--surface:#f8f8fc;--card:#fff;--border:#e0e0ee;
+  --muted:#9090b0;--text:#111118;--sub:#55558a;--shadow:0 4px 24px rgba(0,0,0,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+button{cursor:pointer;font:inherit;border:none;background:none}
+input,textarea,select{font:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+
+/* ══ LOGIN PAGE ══ */
+#loginPage{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;
+  background:var(--bg);
+}
+.login-box{
+  width:100%;max-width:400px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:20px;padding:36px 32px;
+  box-shadow:0 8px 48px rgba(0,0,0,.5);
+}
+.login-logo{
+  font-family:'Bangers',cursive;font-size:2.2rem;letter-spacing:.06em;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-align:center;margin-bottom:6px;
+}
+.login-tagline{text-align:center;font-size:.82rem;color:var(--muted);margin-bottom:28px}
+.login-tabs{display:flex;background:var(--card);border-radius:99px;padding:4px;margin-bottom:24px;border:1px solid var(--border)}
+.lt-btn{flex:1;padding:8px;border-radius:99px;font-size:.83rem;font-weight:600;color:var(--muted);transition:all .2s}
+.lt-btn.active{background:var(--accent2);color:#fff}
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:.78rem;font-weight:600;color:var(--sub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.form-input{
+  width:100%;padding:11px 14px;background:var(--card);
+  border:1px solid var(--border);border-radius:10px;color:var(--text);
+  font-size:.9rem;outline:none;transition:border-color .2s;
+}
+.form-input:focus{border-color:var(--accent2)}
+.form-input::placeholder{color:var(--muted)}
+.phone-wrap{display:flex;gap:8px}
+.phone-code{
+  width:72px;padding:11px 10px;background:var(--card);
+  border:1px solid var(--border);border-radius:10px;color:var(--text);
+  font-size:.9rem;outline:none;text-align:center;
+}
+.btn-login{
+  width:100%;padding:13px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-weight:700;font-size:.95rem;margin-top:4px;
+  transition:opacity .2s;letter-spacing:.02em;
+}
+.btn-login:hover{opacity:.88}
+.login-divider{display:flex;align-items:center;gap:10px;margin:18px 0;color:var(--muted);font-size:.78rem}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.btn-demo{
+  width:100%;padding:11px;border-radius:12px;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--sub);font-weight:600;font-size:.88rem;transition:background .2s;
+}
+.btn-demo:hover{background:var(--border)}
+.login-switch{text-align:center;font-size:.8rem;color:var(--muted);margin-top:16px}
+.login-switch span{color:var(--accent2);cursor:pointer;font-weight:600}
+.login-switch span:hover{text-decoration:underline}
+.form-err{font-size:.77rem;color:var(--accent);margin-top:5px;display:none}
+.admin-hint{
+  background:rgba(124,58,237,.12);border:1px solid rgba(124,58,237,.3);
+  border-radius:10px;padding:10px 14px;font-size:.78rem;color:var(--sub);margin-top:12px;line-height:1.6;
+}
+.admin-hint strong{color:var(--accent2)}
+
+/* ══ APP ══ */
+#app{display:none}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;gap:12px;
+  padding:0 20px;height:58px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+}
+.logo{font-family:'Bangers',cursive;font-size:1.6rem;letter-spacing:.06em;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
+.search-wrap{flex:1;max-width:440px;display:flex;align-items:center;
+  background:var(--card);border:1px solid var(--border);border-radius:99px;padding:0 14px;gap:8px}
+.search-wrap svg{color:var(--muted);flex-shrink:0}
+.search-wrap input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:.88rem;padding:9px 0}
+.search-wrap input::placeholder{color:var(--muted)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{position:relative;width:38px;height:38px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  display:grid;place-items:center;font-size:1.1rem;transition:background .2s}
+.icon-btn:hover{background:var(--border)}
+.notif-dot{position:absolute;top:5px;right:5px;width:8px;height:8px;
+  border-radius:50%;background:var(--accent);border:2px solid var(--surface);display:none}
+.notif-dot.show{display:block}
+.profile-btn{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;
+  border-radius:99px;background:var(--card);border:1px solid var(--border);transition:background .2s}
+.profile-btn:hover{background:var(--border)}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid;place-items:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0}
+.profile-btn span{font-size:.83rem;font-weight:600}
+.admin-badge{
+  font-size:.66rem;font-weight:700;background:var(--accent2);color:#fff;
+  padding:2px 7px;border-radius:99px;text-transform:uppercase;letter-spacing:.05em;
+}
+
+/* ── GENRE BAR ── */
+.genre-bar{display:flex;gap:8px;padding:12px 20px;overflow-x:auto;scrollbar-width:none;
+  background:var(--surface);border-bottom:1px solid var(--border)}
+.genre-bar::-webkit-scrollbar{display:none}
+.pill{flex-shrink:0;padding:5px 15px;border-radius:99px;font-size:.8rem;font-weight:600;
+  background:var(--card);border:1px solid var(--border);color:var(--sub);transition:all .2s}
+.pill:hover,.pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── MAIN ── */
+.main{padding:22px 20px;max-width:1280px;margin:0 auto}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-title{font-family:'Bangers',cursive;font-size:1.4rem;letter-spacing:.04em;
+  display:flex;align-items:center;gap:8px}
+.hot-badge{font-family:'Inter';font-size:.72rem;font-weight:700;
+  background:var(--accent);color:#fff;padding:2px 8px;border-radius:99px;letter-spacing:0}
+
+/* hero */
+.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.hero-grid{grid-template-columns:1fr}}
+.hero-card{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:2/1;cursor:pointer}
+.hero-card img{width:100%;height:100%;object-fit:cover;transition:transform .4s;display:block}
+.hero-card:hover img{transform:scale(1.05)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 55%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:16px}
+.hero-genre{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:3px}
+.hero-title{font-family:'Bangers',cursive;font-size:1.25rem;color:#fff;letter-spacing:.03em}
+.hero-meta{font-size:.74rem;color:rgba(255,255,255,.6);margin-top:3px}
+
+/* comic grid */
+.comic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:16px;margin-bottom:36px}
+.comic-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);
+  overflow:hidden;cursor:pointer;transition:transform .22s,box-shadow .22s}
+.comic-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.cc-thumb{position:relative;aspect-ratio:3/4;overflow:hidden}
+.cc-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .35s;display:block}
+.comic-card:hover .cc-thumb img{transform:scale(1.06)}
+.sub-badge{position:absolute;top:8px;left:8px;background:var(--accent2);color:#fff;
+  font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:99px;display:none}
+.sub-badge.show{display:block}
+.genre-tag{position:absolute;bottom:8px;left:8px;font-size:.66rem;font-weight:700;
+  text-transform:uppercase;background:var(--accent);color:#fff;padding:2px 8px;border-radius:99px}
+.sub-btn-card{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);
+  border-radius:8px;padding:4px 8px;font-size:.75rem;font-weight:700;color:#fff;
+  backdrop-filter:blur(4px);opacity:0;transition:opacity .2s;border:1px solid rgba(255,255,255,.15)}
+.comic-card:hover .sub-btn-card{opacity:1}
+.sub-btn-card.subbed{opacity:1;background:var(--accent2);border-color:var(--accent2)}
+.cc-info{padding:9px 11px 11px}
+.cc-info h4{font-size:.86rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.cc-meta{font-size:.73rem;color:var(--muted);display:flex;justify-content:space-between}
+.star{color:var(--yellow);margin-right:1px}
+.no-result{text-align:center;color:var(--muted);padding:50px 0;display:none}
+.no-result .big{font-size:2.8rem}
+
+/* ── READER MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(5px);
+  overflow-y:auto;padding:16px;align-items:flex-start;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);
+  border-radius:18px;width:100%;max-width:800px;margin:auto;
+  animation:popUp .24s ease}
+@keyframes popUp{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+.comic-info-bar{display:flex;gap:14px;padding:18px 20px;border-bottom:1px solid var(--border)}
+.ci-cover{width:72px;height:96px;object-fit:cover;border-radius:10px;flex-shrink:0}
+.ci-detail{flex:1}
+.ci-title{font-family:'Bangers',cursive;font-size:1.35rem;letter-spacing:.03em;margin-bottom:4px}
+.ci-meta{font-size:.78rem;color:var(--sub);margin-bottom:8px}
+.ci-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-sub{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:99px;
+  font-size:.82rem;font-weight:700;transition:all .2s;
+  background:var(--accent2);color:#fff;border:1px solid var(--accent2)}
+.btn-sub.subbed{background:var(--card);color:var(--sub);border-color:var(--border)}
+.btn-bm{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:99px;
+  font-size:.82rem;font-weight:600;background:var(--card);border:1px solid var(--border);color:var(--sub);transition:all .2s}
+.btn-bm.saved{background:var(--accent);color:#fff;border-color:var(--accent)}
+.close-modal{margin-left:auto;width:36px;height:36px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  display:grid;place-items:center;font-size:1rem;color:var(--sub);flex-shrink:0;transition:background .2s}
+.close-modal:hover{background:var(--border);color:var(--text)}
+.modal-tabs{display:flex;border-bottom:1px solid var(--border)}
+.tab-btn{flex:1;padding:13px;font-size:.85rem;font-weight:600;color:var(--muted);
+  border-bottom:2px solid transparent;transition:all .2s}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none;padding:18px 20px}
+.tab-content.active{display:block}
+.chap-head{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+.chap-item{display:flex;align-items:center;justify-content:space-between;
+  padding:11px 14px;border-radius:10px;cursor:pointer;transition:background .18s;
+  border-bottom:1px solid var(--border)}
+.chap-item:last-child{border-bottom:none}
+.chap-item:hover{background:var(--card)}
+.chap-item.active{background:var(--accent2)!important}
+.chap-item.active .chap-title,.chap-item.active .chap-right{color:#fff!important}
+.chap-title{font-size:.87rem;font-weight:600}
+.chap-right{display:flex;align-items:center;gap:10px;font-size:.75rem;color:var(--muted)}
+.chap-likes{display:flex;align-items:center;gap:4px}
+.chap-read{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;display:none}
+.chap-read.show{display:block}
+.reader-wrap{display:none}
+.reader-wrap.open{display:block;padding:0 20px 20px}
+.reader-topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;border-bottom:1px solid var(--border);margin-bottom:12px}
+.reader-topbar .ch-label{font-size:.88rem;font-weight:700}
+.reader-nav-btns{display:flex;gap:8px}
+.rnav{padding:7px 14px;border-radius:99px;font-size:.8rem;font-weight:600;
+  background:var(--card);border:1px solid var(--border);color:var(--sub);transition:all .2s}
+.rnav:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.reader-pages{display:flex;flex-direction:column;gap:2px}
+.reader-pages img{width:100%;display:block}
+.reader-actions{display:flex;align-items:center;justify-content:center;gap:16px;
+  padding:20px 0;border-top:1px solid var(--border);margin-top:16px}
+.like-btn{display:flex;align-items:center;gap:8px;padding:10px 22px;border-radius:99px;
+  background:var(--card);border:1px solid var(--border);font-size:.88rem;font-weight:700;
+  color:var(--sub);transition:all .22s}
+.like-btn.liked{background:rgba(255,77,109,.12);border-color:var(--accent);color:var(--accent)}
+.like-btn .heart{font-size:1.1rem;transition:transform .22s}
+.like-btn.liked .heart{transform:scale(1.3)}
+.comment-input-wrap{display:flex;gap:10px;margin-bottom:18px;align-items:flex-start}
+.comment-input-wrap .avatar{flex-shrink:0;margin-top:2px}
+.comment-input-wrap textarea{flex:1;background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:10px 14px;color:var(--text);resize:none;
+  font-size:.86rem;outline:none;transition:border-color .2s;min-height:68px}
+.comment-input-wrap textarea:focus{border-color:var(--accent2)}
+.comment-input-wrap textarea::placeholder{color:var(--muted)}
+.btn-comment{padding:8px 18px;border-radius:99px;
+  background:var(--accent2);color:#fff;font-weight:700;font-size:.82rem;transition:opacity .2s}
+.btn-comment:hover{opacity:.85}
+.comment-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.comment-item:last-child{border-bottom:none}
+.comment-body{flex:1}
+.comment-name{font-size:.82rem;font-weight:700;margin-bottom:3px}
+.comment-name span{font-size:.72rem;color:var(--muted);font-weight:400;margin-left:6px}
+.comment-text{font-size:.85rem;color:var(--sub);line-height:1.55}
+.comment-like{display:flex;align-items:center;gap:5px;margin-top:6px;
+  font-size:.76rem;color:var(--muted);cursor:pointer;width:fit-content;transition:color .18s}
+.comment-like:hover,.comment-like.liked{color:var(--accent)}
+.no-comments{text-align:center;color:var(--muted);font-size:.85rem;padding:24px 0}
+
+/* ── NOTIF PANEL ── */
+.side-panel{display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);justify-content:flex-end}
+.side-panel.open{display:flex}
+.side-drawer{background:var(--surface);border-left:1px solid var(--border);
+  width:320px;height:100vh;overflow-y:auto;padding:20px;
+  animation:slideIn .22s ease}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.drawer-title{font-family:'Bangers',cursive;font-size:1.35rem;letter-spacing:.04em}
+.drawer-close{width:32px;height:32px;border-radius:50%;background:var(--card);
+  border:1px solid var(--border);display:grid;place-items:center;color:var(--sub);font-size:1rem}
+.drawer-close:hover{background:var(--border)}
+.notif-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.notif-item:last-child{border-bottom:none}
+.notif-item:hover{opacity:.8}
+.notif-thumb{width:42px;height:56px;object-fit:cover;border-radius:7px;flex-shrink:0}
+.notif-info h4{font-size:.84rem;font-weight:700}
+.notif-info p{font-size:.76rem;color:var(--muted);margin-top:2px}
+.notif-info .notif-time{font-size:.7rem;color:var(--muted);margin-top:4px}
+.notif-unread{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px}
+.empty-state{text-align:center;color:var(--muted);font-size:.85rem;padding:32px 0}
+
+/* ── PROFILE PANEL ── */
+.profile-header{text-align:center;padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.profile-avatar{width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid;place-items:center;font-size:1.5rem;font-weight:700;color:#fff;margin:0 auto 10px}
+.profile-name{font-weight:700;font-size:1rem}
+.profile-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.pstat{background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:12px;text-align:center}
+.pstat-num{font-family:'Bangers',cursive;font-size:1.3rem}
+.pstat-label{font-size:.7rem;color:var(--muted);margin-top:1px}
+.history-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.history-item:last-child{border-bottom:none}
+.history-item:hover{opacity:.8}
+.history-thumb{width:38px;height:50px;object-fit:cover;border-radius:6px;flex-shrink:0}
+.history-info h4{font-size:.83rem;font-weight:700}
+.history-info p{font-size:.74rem;color:var(--muted);margin-top:2px}
+.progress-bar{height:3px;background:var(--border);border-radius:99px;margin-top:5px}
+.progress-fill{height:100%;background:var(--accent2);border-radius:99px}
+.btn-logout{
+  width:100%;margin-top:20px;padding:11px;border-radius:12px;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--accent);font-weight:700;font-size:.88rem;transition:background .2s;
+}
+.btn-logout:hover{background:rgba(255,77,109,.1)}
+.btn-admin-entry{
+  width:100%;margin-top:8px;padding:11px;border-radius:12px;
+  background:var(--accent2);color:#fff;font-weight:700;font-size:.88rem;transition:opacity .2s;
+}
+.btn-admin-entry:hover{opacity:.85}
+
+/* toast */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--accent2);color:#fff;border-radius:99px;padding:9px 20px;
+  font-size:.84rem;font-weight:600;opacity:0;pointer-events:none;z-index:999;
+  transition:opacity .3s,transform .3s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ══ ADMIN PANEL ══ */
+#adminPanel{
+  display:none;position:fixed;inset:0;z-index:400;
+  background:var(--bg);overflow-y:auto;
+  animation:popUp .25s ease;
+}
+#adminPanel.open{display:block}
+.admin-topbar{
+  position:sticky;top:0;z-index:10;
+  display:flex;align-items:center;gap:12px;padding:0 24px;height:60px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+}
+.admin-topbar .logo{font-size:1.4rem}
+.admin-topbar-title{font-size:.9rem;font-weight:700;color:var(--sub)}
+.admin-topbar-right{margin-left:auto;display:flex;gap:8px}
+.admin-nav{
+  display:flex;gap:2px;padding:12px 24px 0;
+  border-bottom:1px solid var(--border);background:var(--surface);
+  overflow-x:auto;scrollbar-width:none;
+}
+.admin-nav::-webkit-scrollbar{display:none}
+.anav-btn{
+  flex-shrink:0;padding:10px 18px;font-size:.84rem;font-weight:600;
+  color:var(--muted);border-bottom:2px solid transparent;transition:all .2s;
+  white-space:nowrap;
+}
+.anav-btn.active{color:var(--accent2);border-bottom-color:var(--accent2)}
+.admin-body{padding:24px;max-width:1100px;margin:0 auto}
+.admin-section{display:none}
+.admin-section.active{display:block}
+
+/* stat cards */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;
+  position:relative;overflow:hidden;
+}
+.stat-card::after{
+  content:'';position:absolute;top:0;right:0;
+  width:60px;height:60px;border-radius:0 14px 0 60px;
+  background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(255,77,109,.1));
+}
+.stat-num{font-family:'Bangers',cursive;font-size:2rem;letter-spacing:.02em;margin-bottom:2px}
+.stat-label{font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.stat-change{font-size:.72rem;margin-top:6px}
+.stat-change.up{color:var(--green)}
+.stat-change.down{color:var(--accent)}
+
+/* traffic chart */
+.chart-box{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:24px;
+}
+.chart-title{font-size:.88rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.chart-area{height:160px;display:flex;align-items:flex-end;gap:6px}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;border-radius:6px 6px 0 0;transition:opacity .2s;cursor:pointer;min-height:4px}
+.chart-bar:hover{opacity:.75}
+.chart-label{font-size:.66rem;color:var(--muted);text-align:center}
+.chart-val{font-size:.7rem;color:var(--sub);font-weight:600}
+.chart-legend{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap}
+.cl-item{display:flex;align-items:center;gap:6px;font-size:.76rem;color:var(--sub)}
+.cl-dot{width:10px;height:10px;border-radius:50%}
+
+/* table */
+.admin-table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px}
+.admin-table-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+}
+.admin-table-head h3{font-size:.9rem;font-weight:700}
+.btn-add{
+  display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;
+  background:var(--accent2);color:#fff;font-size:.82rem;font-weight:700;transition:opacity .2s;
+}
+.btn-add:hover{opacity:.85}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:11px 18px;font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--border)}
+td{padding:12px 18px;font-size:.84rem;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--card)}
+.td-cover{width:32px;height:42px;object-fit:cover;border-radius:5px}
+.td-badge{font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:99px;
+  background:rgba(124,58,237,.15);color:var(--accent2);text-transform:capitalize}
+.td-actions{display:flex;gap:6px}
+.btn-edit{padding:6px 12px;border-radius:8px;font-size:.76rem;font-weight:700;
+  background:rgba(124,58,237,.15);color:var(--accent2);transition:background .2s;border:1px solid rgba(124,58,237,.3)}
+.btn-edit:hover{background:rgba(124,58,237,.3)}
+.btn-del{padding:6px 12px;border-radius:8px;font-size:.76rem;font-weight:700;
+  background:rgba(255,77,109,.1);color:var(--accent);transition:background .2s;border:1px solid rgba(255,77,109,.25)}
+.btn-del:hover{background:rgba(255,77,109,.22)}
+
+/* top comics list */
+.top-comic-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--border);
+}
+.top-comic-item:last-child{border-bottom:none}
+.top-rank{font-family:'Bangers',cursive;font-size:1.5rem;color:var(--muted);width:28px;text-align:center}
+.top-rank.gold{color:var(--yellow)}
+.top-rank.silver{color:#aaa}
+.top-rank.bronze{color:#cd7f32}
+.top-comic-info{flex:1}
+.top-comic-info h4{font-size:.86rem;font-weight:700}
+.top-comic-info p{font-size:.74rem;color:var(--muted);margin-top:2px}
+.top-comic-bar{height:4px;background:var(--border);border-radius:99px;margin-top:5px;width:100%}
+.top-comic-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent2),var(--accent))}
+.top-comic-views{font-size:.8rem;font-weight:700;color:var(--sub)}
+
+/* edit modal */
+.edit-modal-bg{display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:20px}
+.edit-modal-bg.open{display:flex}
+.edit-modal{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:18px;width:100%;max-width:520px;
+  max-height:90vh;overflow-y:auto;
+  animation:popUp .22s ease;
+}
+.edit-modal-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--surface);z-index:1;
+}
+.edit-modal-head h3{font-family:'Bangers',cursive;font-size:1.25rem;letter-spacing:.03em}
+.edit-modal-body{padding:22px}
+.edit-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:.75rem;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.fg input,.fg select,.fg textarea{
+  width:100%;padding:10px 14px;background:var(--card);
+  border:1px solid var(--border);border-radius:10px;color:var(--text);
+  font-size:.88rem;outline:none;transition:border-color .2s;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent2)}
+.fg textarea{min-height:80px;resize:vertical}
+.fg select option{background:var(--surface)}
+.edit-actions{
+  display:flex;gap:10px;justify-content:flex-end;
+  padding-top:14px;border-top:1px solid var(--border);margin-top:6px;
+}
+.btn-save{padding:10px 24px;border-radius:10px;
+  background:var(--accent2);color:#fff;font-weight:700;font-size:.88rem;transition:opacity .2s}
+.btn-save:hover{opacity:.85}
+.btn-cancel{padding:10px 18px;border-radius:10px;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--sub);font-weight:600;font-size:.88rem;transition:background .2s}
+.btn-cancel:hover{background:var(--border)}
+
+/* recent activity */
+.activity-item{
+  display:flex;gap:10px;align-items:flex-start;
+  padding:11px 0;border-bottom:1px solid var(--border);
+}
+.activity-item:last-child{border-bottom:none}
+.activity-icon{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  display:grid;place-items:center;font-size:1rem;
+}
+.ai-read{background:rgba(34,197,94,.12)}
+.ai-comment{background:rgba(124,58,237,.12)}
+.ai-like{background:rgba(255,77,109,.12)}
+.ai-new{background:rgba(245,158,11,.12)}
+.activity-info{flex:1}
+.activity-info p{font-size:.83rem;color:var(--sub);line-height:1.5}
+.activity-info span{font-size:.72rem;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN PAGE ══ -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">INKDROP</div>
+    <div class="login-tagline">Baca komik favoritmu kapan saja 📚</div>
+
+    <div class="login-tabs">
+      <button class="lt-btn active" id="tabEmail" onclick="switchLoginTab('email')">📧 Email</button>
+      <button class="lt-btn" id="tabPhone" onclick="switchLoginTab('phone')">📱 No. HP</button>
+    </div>
+
+    <!-- Email login -->
+    <div id="emailForm">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="emailInput" placeholder="contoh@email.com" oninput="clearErr()"/>
+        <div class="form-err" id="emailErr">Email tidak valid.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="passInput" placeholder="••••••••" oninput="clearErr()"/>
+        <div class="form-err" id="passErr">Password salah.</div>
+      </div>
+    </div>
+
+    <!-- Phone login -->
+    <div id="phoneForm" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Nomor HP</label>
+        <div class="phone-wrap">
+          <input class="phone-code" type="text" value="+62" readonly/>
+          <input class="form-input" type="tel" id="phoneInput" placeholder="812-3456-7890" oninput="clearErr()"/>
+        </div>
+        <div class="form-err" id="phoneErr">Nomor HP tidak valid.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="passInputPhone" placeholder="••••••••" oninput="clearErr()"/>
+      </div>
+    </div>
+
+    <button class="btn-login" onclick="doLogin()">Masuk →</button>
+
+    <div class="login-divider">atau</div>
+    <button class="btn-demo" onclick="loginDemo()">🚀 Masuk sebagai Guest</button>
+
+    <div class="login-switch">Belum punya akun? <span onclick="showRegister()">Daftar sekarang</span></div>
+
+    <div class="admin-hint">
+      <strong>🛡️ Admin demo:</strong><br>
+      Email: <strong>admin@inkdrop.id</strong> | Password: <strong>admin123</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo">INKDROP</div>
+  <div class="search-wrap">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Cari komik…" oninput="applyFilters()"/>
+  </div>
+  <div class="tb-right">
+    <button class="icon-btn" title="Notifikasi" onclick="openPanel('notif')">
+      🔔<span class="notif-dot show" id="notifDot"></span>
+    </button>
+    <button class="icon-btn" title="Ganti tema" id="themeBtn">🌙</button>
+    <button class="profile-btn" onclick="openPanel('profile')">
+      <div class="avatar" id="topAvatar">K</div>
+      <span id="topName">Kamu</span>
+    </button>
+  </div>
+</header>
+
+<!-- GENRE BAR -->
+<nav class="genre-bar" id="genreBar">
+  <button class="pill active" data-genre="all">Semua</button>
+  <button class="pill" data-genre="action">Action</button>
+  <button class="pill" data-genre="romance">Romance</button>
+  <button class="pill" data-genre="fantasy">Fantasy</button>
+  <button class="pill" data-genre="horror">Horror</button>
+  <button class="pill" data-genre="comedy">Comedy</button>
+  <button class="pill" data-genre="sci-fi">Sci-Fi</button>
+  <button class="pill" data-genre="drama">Drama</button>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+  <section style="margin-bottom:32px">
+    <div class="sec-head">
+      <div class="sec-title">Trending <span class="hot-badge">HOT</span></div>
+    </div>
+    <div class="hero-grid" id="heroGrid"></div>
+  </section>
+  <section>
+    <div class="sec-head">
+      <div class="sec-title">Semua Komik</div>
+      <div style="font-size:.8rem;color:var(--muted)" id="resultCount"></div>
+    </div>
+    <div class="comic-grid" id="comicGrid"></div>
+    <div class="no-result" id="noResult"><div class="big">😶</div><p>Tidak ditemukan.</p></div>
+  </section>
+</main>
+
+<!-- READER MODAL -->
+<div class="modal-bg" id="readerModal">
+  <div class="modal">
+    <div class="comic-info-bar">
+      <img class="ci-cover" id="ciCover" src="" alt=""/>
+      <div class="ci-detail">
+        <div class="ci-title" id="ciTitle"></div>
+        <div class="ci-meta" id="ciMeta"></div>
+        <div class="ci-actions">
+          <button class="btn-sub" id="subBtn" onclick="toggleSub()">＋ Subscribe</button>
+          <button class="btn-bm" id="bmBtn" onclick="toggleBm()">🤍 Bookmark</button>
+        </div>
+      </div>
+      <button class="close-modal" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-tabs">
+      <button class="tab-btn active" onclick="switchTab('chapters')">📋 Chapter</button>
+      <button class="tab-btn" onclick="switchTab('comments')">💬 Komentar</button>
+    </div>
+    <div class="tab-content active" id="tab-chapters">
+      <div class="chap-head">Pilih Chapter</div>
+      <div id="chapList"></div>
+    </div>
+    <div class="tab-content" id="tab-comments">
+      <div class="comment-input-wrap">
+        <div class="avatar" id="commentAvatar">K</div>
+        <div style="flex:1">
+          <textarea id="commentInput" placeholder="Tulis komentar…" rows="2"></textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:6px">
+            <button class="btn-comment" onclick="postComment()">Kirim</button>
+          </div>
+        </div>
+      </div>
+      <div id="commentList"></div>
+    </div>
+    <div class="reader-wrap" id="readerWrap">
+      <div class="reader-topbar">
+        <button class="rnav" onclick="prevChap()">← Prev</button>
+        <span class="ch-label" id="readerLabel"></span>
+        <div class="reader-nav-btns">
+          <button class="rnav" onclick="backToChapList()">📋 List</button>
+          <button class="rnav" onclick="nextChap()">Next →</button>
+        </div>
+      </div>
+      <div class="reader-pages" id="readerPages"></div>
+      <div class="reader-actions">
+        <button class="like-btn" id="likeBtn" onclick="toggleLike()">
+          <span class="heart">🤍</span>
+          <span id="likeCount">0</span> Suka
+        </button>
+        <button class="rnav" onclick="switchTab('comments');backToChapList()">💬 Komentar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIF PANEL -->
+<div class="side-panel" id="notifPanel" onclick="closePanelBg(event,'notifPanel')">
+  <div class="side-drawer">
+    <div class="drawer-head">
+      <div class="drawer-title">🔔 Notifikasi</div>
+      <button class="drawer-close" onclick="openPanel('notif')">✕</button>
+    </div>
+    <div id="notifList"></div>
+  </div>
+</div>
+
+<!-- PROFILE PANEL -->
+<div class="side-panel" id="profilePanel" onclick="closePanelBg(event,'profilePanel')">
+  <div class="side-drawer">
+    <div class="drawer-head">
+      <div class="drawer-title">👤 Profil</div>
+      <button class="drawer-close" onclick="openPanel('profile')">✕</button>
+    </div>
+    <div class="profile-header">
+      <div class="profile-avatar" id="profileAvatar">K</div>
+      <div class="profile-name" id="profileName">Komik Reader</div>
+      <div class="profile-sub" id="profileEmail">guest@inkdrop.id</div>
+    </div>
+    <div class="profile-stats" id="profileStats"></div>
+    <div style="font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px">Riwayat Baca</div>
+    <div id="historyList"></div>
+    <button class="btn-admin-entry" id="adminEntryBtn" style="display:none" onclick="openAdmin()">🛡️ Buka Admin Panel</button>
+    <button class="btn-logout" onclick="doLogout()">⬅️ Keluar</button>
+  </div>
+</div>
+
+</div><!-- end #app -->
+
+<!-- ══ ADMIN PANEL ══ -->
+<div id="adminPanel">
+  <div class="admin-topbar">
+    <div class="logo">INKDROP</div>
+    <div class="admin-topbar-title">Admin Panel</div>
+    <div class="admin-topbar-right">
+      <button class="btn-cancel" style="font-size:.8rem" onclick="closeAdmin()">← Kembali ke Beranda</button>
+    </div>
+  </div>
+  <nav class="admin-nav">
+    <button class="anav-btn active" onclick="switchAdminTab('dashboard')">📊 Dashboard</button>
+    <button class="anav-btn" onclick="switchAdminTab('traffic')">📈 Traffic</button>
+    <button class="anav-btn" onclick="switchAdminTab('comics')">📚 Kelola Komik</button>
+    <button class="anav-btn" onclick="switchAdminTab('activity')">🕐 Aktivitas</button>
+  </nav>
+
+  <div class="admin-body">
+
+    <!-- DASHBOARD -->
+    <div class="admin-section active" id="sec-dashboard">
+      <div class="stat-grid" id="statGrid"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px">
+        <div class="chart-box" style="grid-column:1/3">
+          <div class="chart-title">
+            Pengunjung 14 Hari Terakhir
+            <span style="font-size:.76rem;color:var(--muted);font-weight:400">Total kunjungan harian</span>
+          </div>
+          <div class="chart-area" id="visitorChart"></div>
+          <div class="chart-legend">
+            <div class="cl-item"><div class="cl-dot" style="background:var(--accent2)"></div>Pengunjung</div>
+            <div class="cl-item"><div class="cl-dot" style="background:var(--accent)"></div>Chapter dibaca</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div class="chart-box">
+          <div class="chart-title">Top 5 Komik</div>
+          <div id="topComicsList"></div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">Genre Populer</div>
+          <div class="chart-area" id="genreChart" style="height:120px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRAFFIC -->
+    <div class="admin-section" id="sec-traffic">
+      <div class="stat-grid" id="trafficStatGrid"></div>
+      <div class="chart-box">
+        <div class="chart-title">
+          Traffic per Jam (Hari Ini)
+          <span style="font-size:.76rem;color:var(--muted);font-weight:400">Aktif: <span id="liveVisitors" style="color:var(--green);font-weight:700">0</span> pengunjung</span>
+        </div>
+        <div class="chart-area" id="hourlyChart"></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Sumber Traffic</div>
+        <div id="trafficSource"></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-title">Halaman Terpopuler Hari Ini</div>
+        <div id="topPages"></div>
+      </div>
+    </div>
+
+    <!-- COMICS MANAGEMENT -->
+    <div class="admin-section" id="sec-comics">
+      <div class="admin-table-wrap">
+        <div class="admin-table-head">
+          <h3>Semua Komik <span style="color:var(--muted);font-weight:400;font-size:.8rem" id="comicCount"></span></h3>
+          <button class="btn-add" onclick="openEditModal(null)">＋ Tambah Komik</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="adminComicTable">
+            <thead>
+              <tr>
+                <th>Cover</th><th>Judul</th><th>Genre</th>
+                <th>Rating</th><th>Chapter</th><th>Views</th><th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="adminComicBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY -->
+    <div class="admin-section" id="sec-activity">
+      <div class="chart-box">
+        <div class="chart-title">Aktivitas Terbaru</div>
+        <div id="activityFeed"></div>
+      </div>
+    </div>
+
+  </div><!-- admin-body -->
+</div><!-- adminPanel -->
+
+<!-- EDIT COMIC MODAL -->
+<div class="edit-modal-bg" id="editModalBg">
+  <div class="edit-modal">
+    <div class="edit-modal-head">
+      <h3 id="editModalTitle">Edit Komik</h3>
+      <button class="drawer-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="edit-modal-body">
+      <input type="hidden" id="editId"/>
+      <div class="fg">
+        <label>Judul Komik</label>
+        <input type="text" id="editTitle" placeholder="Masukkan judul…"/>
+      </div>
+      <div class="edit-row">
+        <div class="fg">
+          <label>Genre</label>
+          <select id="editGenre">
+            <option value="action">Action</option>
+            <option value="romance">Romance</option>
+            <option value="fantasy">Fantasy</option>
+            <option value="horror">Horror</option>
+            <option value="comedy">Comedy</option>
+            <option value="sci-fi">Sci-Fi</option>
+            <option value="drama">Drama</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Rating (0–5)</label>
+          <input type="number" id="editRating" min="0" max="5" step="0.1" placeholder="4.5"/>
+        </div>
+      </div>
+      <div class="edit-row">
+        <div class="fg">
+          <label>Jumlah Chapter</label>
+          <input type="number" id="editChapters" min="1" placeholder="50"/>
+        </div>
+        <div class="fg">
+          <label>Status</label>
+          <select id="editStatus">
+            <option value="ongoing">Ongoing</option>
+            <option value="completed">Completed</option>
+            <option value="hiatus">Hiatus</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>URL Cover (gambar)</label>
+        <input type="text" id="editCover" placeholder="https://…"/>
+      </div>
+      <div class="fg">
+        <label>Deskripsi</label>
+        <textarea id="editDesc" placeholder="Sinopsis komik…"></textarea>
+      </div>
+      <div class="edit-actions">
+        <button class="btn-cancel" onclick="closeEditModal()">Batal</button>
+        <button class="btn-save" onclick="saveComic()">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══ AUTH ══ */
+const USERS = [
+  {email:'admin@inkdrop.id',phone:'081200000000',pass:'admin123',name:'Admin Inkdrop',role:'admin'},
+  {email:'user@demo.com',phone:'081200000001',pass:'demo123',name:'Demo User',role:'user'},
+];
+
+let currentUser = null;
+let loginMode = 'email';
+
+function switchLoginTab(mode){
+  loginMode = mode;
+  document.getElementById('emailForm').style.display = mode==='email'?'block':'none';
+  document.getElementById('phoneForm').style.display = mode==='phone'?'block':'none';
+  document.getElementById('tabEmail').classList.toggle('active', mode==='email');
+  document.getElementById('tabPhone').classList.toggle('active', mode==='phone');
+  clearErr();
+}
+
+function clearErr(){
+  ['emailErr','passErr','phoneErr'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display='none';
+  });
+}
+
+function doLogin(){
+  clearErr();
+  let user = null;
+  if(loginMode==='email'){
+    const email = document.getElementById('emailInput').value.trim().toLowerCase();
+    const pass  = document.getElementById('passInput').value;
+    if(!email.includes('@')){document.getElementById('emailErr').style.display='block';return;}
+    user = USERS.find(u=>u.email===email && u.pass===pass);
+    if(!user){document.getElementById('passErr').style.display='block';return;}
+  } else {
+    const phone = document.getElementById('phoneInput').value.replace(/\D/g,'');
+    const pass  = document.getElementById('passInputPhone').value;
+    const full  = '0'+phone;
+    user = USERS.find(u=>u.phone===full && u.pass===pass);
+    if(!user){document.getElementById('phoneErr').style.display='block';return;}
+  }
+  loginAs(user);
+}
+
+function loginDemo(){
+  loginAs({email:'guest@inkdrop.id',phone:'',pass:'',name:'Pembaca Tamu',role:'user'});
+}
+
+function showRegister(){
+  showToast('Fitur daftar akun segera hadir! 🚧');
+}
+
+function loginAs(user){
+  currentUser = user;
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('app').style.display='block';
+  // set user info
+  const init = user.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  USER.name = user.name;
+  USER.initial = init;
+  document.getElementById('topAvatar').textContent = init;
+  document.getElementById('topName').textContent = user.name.split(' ')[0];
+  if(user.role==='admin'){
+    document.getElementById('adminEntryBtn').style.display='block';
+  }
+  updateNotifDot();renderHero();renderGrid();
+  showToast(`Selamat datang, ${user.name.split(' ')[0]}! 👋`);
+}
+
+function doLogout(){
+  currentUser = null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('profilePanel').classList.remove('open');
+  document.getElementById('notifPanel').classList.remove('open');
+  document.getElementById('adminEntryBtn').style.display='none';
+  // clear inputs
+  ['emailInput','passInput','phoneInput','passInputPhone'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  showToast('Berhasil keluar. Sampai jumpa! 👋');
+  setTimeout(()=>document.getElementById('loginPage').style.display='flex',100);
+}
+
+/* ══ DATA ══ */
+const COMICS = [
+  {id:1,title:"Naga Terakhir",genre:"fantasy",rating:4.9,chapters:148,cover:"https://picsum.photos/seed/k1/300/400",pages:["https://picsum.photos/seed/pg1a/800/1200","https://picsum.photos/seed/pg1b/800/1200","https://picsum.photos/seed/pg1c/800/1200"],status:"ongoing",desc:"Seorang pemuda menemukan ia adalah penjaga terakhir naga legendaris.",views:98421},
+  {id:2,title:"Shadow Blade",genre:"action",rating:4.7,chapters:92,cover:"https://picsum.photos/seed/k2/300/400",pages:["https://picsum.photos/seed/pg2a/800/1200","https://picsum.photos/seed/pg2b/800/1200"],status:"ongoing",desc:"Pembunuh bayaran yang mencari penebusan.",views:74300},
+  {id:3,title:"Cinta di Langit Ke-7",genre:"romance",rating:4.8,chapters:64,cover:"https://picsum.photos/seed/k3/300/400",pages:["https://picsum.photos/seed/pg3a/800/1200","https://picsum.photos/seed/pg3b/800/1200"],status:"completed",desc:"Kisah cinta lintas dimensi yang mengharukan.",views:61890},
+  {id:4,title:"Armageddon X",genre:"sci-fi",rating:4.6,chapters:210,cover:"https://picsum.photos/seed/k4/300/400",pages:["https://picsum.photos/seed/pg4a/800/1200","https://picsum.photos/seed/pg4b/800/1200"],status:"ongoing",desc:"Perang manusia vs AI di tahun 2400.",views:55200},
+  {id:5,title:"Senyum Iblis",genre:"horror",rating:4.5,chapters:77,cover:"https://picsum.photos/seed/k5/300/400",pages:["https://picsum.photos/seed/pg5a/800/1200","https://picsum.photos/seed/pg5b/800/1200"],status:"hiatus",desc:"Sebuah senyuman yang mengundang bencana.",views:42100},
+  {id:6,title:"Ketawa Dulu",genre:"comedy",rating:4.4,chapters:55,cover:"https://picsum.photos/seed/k6/300/400",pages:["https://picsum.photos/seed/pg6a/800/1200","https://picsum.photos/seed/pg6b/800/1200"],status:"ongoing",desc:"Kehidupan sehari-hari yang penuh tawa.",views:38900},
+  {id:7,title:"Sang Penakluk",genre:"action",rating:4.8,chapters:130,cover:"https://picsum.photos/seed/k7/300/400",pages:["https://picsum.photos/seed/pg7a/800/1200","https://picsum.photos/seed/pg7b/800/1200"],status:"ongoing",desc:"Raja perang yang tak terkalahkan.",views:71500},
+  {id:8,title:"Kisah Dua Hati",genre:"drama",rating:4.3,chapters:40,cover:"https://picsum.photos/seed/k8/300/400",pages:["https://picsum.photos/seed/pg8a/800/1200","https://picsum.photos/seed/pg8b/800/1200"],status:"completed",desc:"Drama keluarga yang penuh emosi.",views:29300},
+  {id:9,title:"Ratu Bintang",genre:"fantasy",rating:4.7,chapters:88,cover:"https://picsum.photos/seed/k9/300/400",pages:["https://picsum.photos/seed/pg9a/800/1200","https://picsum.photos/seed/pg9b/800/1200"],status:"ongoing",desc:"Petualangan sang ratu di galaksi lain.",views:53700},
+  {id:10,title:"Cyber Punk Zero",genre:"sci-fi",rating:4.6,chapters:102,cover:"https://picsum.photos/seed/k10/300/400",pages:["https://picsum.photos/seed/pg10a/800/1200","https://picsum.photos/seed/pg10b/800/1200"],status:"ongoing",desc:"Dunia masa depan yang dikuasai korporasi.",views:47600},
+  {id:11,title:"Rumah Tua",genre:"horror",rating:4.5,chapters:35,cover:"https://picsum.photos/seed/k11/300/400",pages:["https://picsum.photos/seed/pg11a/800/1200","https://picsum.photos/seed/pg11b/800/1200"],status:"completed",desc:"Teror di rumah tua yang menyimpan rahasia.",views:31400},
+  {id:12,title:"Pelukan Terakhir",genre:"romance",rating:4.9,chapters:72,cover:"https://picsum.photos/seed/k12/300/400",pages:["https://picsum.photos/seed/pg12a/800/1200","https://picsum.photos/seed/pg12b/800/1200"],status:"completed",desc:"Kisah perpisahan yang menggetarkan hati.",views:66800},
+];
+
+function genChaps(n){
+  const arr=[];const now=new Date();
+  for(let i=n;i>=Math.max(1,n-14);i--){
+    const d=new Date(now);d.setDate(d.getDate()-(n-i)*3);
+    arr.push({num:i,title:`Chapter ${i}`,date:d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})});
+  }
+  return arr;
+}
+
+/* ══ STATE ══ */
+let bookmarks   = JSON.parse(localStorage.getItem('kz2_bm')||'[]');
+let subscribed  = JSON.parse(localStorage.getItem('kz2_sub')||'[]');
+let likes       = JSON.parse(localStorage.getItem('kz2_likes')||'{}');
+let likedBy     = JSON.parse(localStorage.getItem('kz2_likedby')||'[]');
+let comments    = JSON.parse(localStorage.getItem('kz2_comments')||'{}');
+let readHistory = JSON.parse(localStorage.getItem('kz2_history')||'[]');
+let notifications= JSON.parse(localStorage.getItem('kz2_notifs')||'null')||[
+  {id:1,comicId:1,text:"Chapter 149 Naga Terakhir sudah tayang!",time:"2 jam lalu",read:false},
+  {id:2,comicId:3,text:"Cinta di Langit Ke-7 chapter baru!",time:"5 jam lalu",read:false},
+];
+let activeGenre='all',searchQ='';
+let currentComic=null,currentChapIdx=0;
+const USER={name:"Tamu",initial:"T"};
+
+function save(){
+  localStorage.setItem('kz2_bm',JSON.stringify(bookmarks));
+  localStorage.setItem('kz2_sub',JSON.stringify(subscribed));
+  localStorage.setItem('kz2_likes',JSON.stringify(likes));
+  localStorage.setItem('kz2_likedby',JSON.stringify(likedBy));
+  localStorage.setItem('kz2_comments',JSON.stringify(comments));
+  localStorage.setItem('kz2_history',JSON.stringify(readHistory));
+  localStorage.setItem('kz2_notifs',JSON.stringify(notifications));
+}
+
+/* ══ THEME ══ */
+let isDark=true;
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  isDark=!isDark;
+  document.documentElement.dataset.theme=isDark?'dark':'light';
+  document.getElementById('themeBtn').textContent=isDark?'🌙':'☀️';
+});
+
+/* ══ HERO ══ */
+function renderHero(){
+  document.getElementById('heroGrid').innerHTML=COMICS.slice(0,3).map(c=>`
+    <div class="hero-card" onclick="openModal(${c.id})">
+      <img src="${c.cover}" alt="${c.title}" loading="lazy"/>
+      <div class="hero-overlay">
+        <div class="hero-genre">${c.genre}</div>
+        <div class="hero-title">${c.title}</div>
+        <div class="hero-meta">⭐ ${c.rating} · ${c.chapters} ch · ${subscribed.includes(c.id)?'✅ Diikuti':''}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ══ GRID ══ */
+function applyFilters(){searchQ=document.getElementById('searchInput').value;renderGrid();}
+function renderGrid(){
+  const list=COMICS.filter(c=>{
+    const mg=activeGenre==='all'||c.genre===activeGenre;
+    const ms=c.title.toLowerCase().includes(searchQ.toLowerCase());
+    return mg&&ms;
+  });
+  document.getElementById('resultCount').textContent=list.length+' komik';
+  document.getElementById('noResult').style.display=list.length?'none':'block';
+  document.getElementById('comicGrid').innerHTML=list.map(c=>{
+    const sub=subscribed.includes(c.id);
+    return `<div class="comic-card" onclick="openModal(${c.id})">
+      <div class="cc-thumb">
+        <img src="${c.cover}" alt="${c.title}" loading="lazy"/>
+        <span class="sub-badge ${sub?'show':''}">✅ Diikuti</span>
+        <span class="genre-tag">${c.genre}</span>
+        <button class="sub-btn-card ${sub?'subbed':''}" onclick="toggleSubCard(event,${c.id})">${sub?'✅':'＋ Ikuti'}</button>
+      </div>
+      <div class="cc-info">
+        <h4>${c.title}</h4>
+        <div class="cc-meta"><span><span class="star">★</span>${c.rating}</span><span>${c.chapters} ch</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('genreBar').addEventListener('click',e=>{
+  const b=e.target.closest('.pill');if(!b)return;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  b.classList.add('active');activeGenre=b.dataset.genre;renderGrid();
+});
+
+/* ══ MODAL ══ */
+function openModal(id){
+  currentComic=COMICS.find(c=>c.id===id);if(!currentComic)return;
+  document.getElementById('ciCover').src=currentComic.cover;
+  document.getElementById('ciTitle').textContent=currentComic.title;
+  document.getElementById('ciMeta').textContent=`${currentComic.genre.toUpperCase()} · ★ ${currentComic.rating} · ${currentComic.chapters} Chapter`;
+  updateSubBtn();updateBmBtn();renderChapList();renderComments();
+  switchTab('chapters');
+  document.getElementById('readerWrap').classList.remove('open');
+  document.getElementById('readerModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('readerModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('readerModal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('readerModal'))closeModal();
+});
+
+/* ══ TABS ══ */
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['chapters','comments'][i]===name));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  document.getElementById('readerWrap').classList.remove('open');
+}
+function backToChapList(){document.getElementById('readerWrap').classList.remove('open');switchTab('chapters');}
+
+/* ══ CHAPTER LIST ══ */
+function renderChapList(){
+  const chaps=genChaps(currentComic.chapters);
+  document.getElementById('chapList').innerHTML=chaps.map((ch,i)=>{
+    const key=`${currentComic.id}_${ch.num}`;
+    const lc=likes[key]||0;
+    const read=readHistory.some(h=>h.id===currentComic.id&&h.chapNum===ch.num);
+    return `<div class="chap-item ${i===currentChapIdx&&document.getElementById('readerWrap').classList.contains('open')?'active':''}" onclick="openChapter(${i})">
+      <span class="chap-title">${ch.title}</span>
+      <span class="chap-right">
+        <span class="chap-likes">❤️ ${lc}</span>
+        <span>${ch.date}</span>
+        <span class="chap-read ${read?'show':''}" title="Sudah dibaca"></span>
+      </span>
+    </div>`;
+  }).join('');
+}
+
+function openChapter(idx){
+  currentChapIdx=idx;
+  const chaps=genChaps(currentComic.chapters);
+  const ch=chaps[idx];
+  document.getElementById('readerLabel').textContent=`${currentComic.title} — ${ch.title}`;
+  document.getElementById('readerPages').innerHTML=
+    currentComic.pages.map((p,i)=>`<img src="${p}?v=${ch.num}" alt="Hal ${i+1}" loading="lazy"/>`).join('');
+  const key=`${currentComic.id}_${ch.num}`;
+  const lc=likes[key]||0;const liked=likedBy.includes(key);
+  document.getElementById('likeCount').textContent=lc;
+  document.getElementById('likeBtn').classList.toggle('liked',liked);
+  document.getElementById('likeBtn').querySelector('.heart').textContent=liked?'❤️':'🤍';
+  document.getElementById('readerWrap').classList.add('open');
+  document.getElementById('readerWrap').scrollIntoView({behavior:'smooth',block:'start'});
+  addHistory(currentComic,ch);renderChapList();
+}
+function prevChap(){const c=genChaps(currentComic.chapters);if(currentChapIdx<c.length-1)openChapter(currentChapIdx+1);else showToast('Sudah chapter pertama!')}
+function nextChap(){if(currentChapIdx>0)openChapter(currentChapIdx-1);else showToast('Ini chapter terbaru!')}
+
+/* ══ LIKE ══ */
+function toggleLike(){
+  const ch=genChaps(currentComic.chapters)[currentChapIdx];
+  const key=`${currentComic.id}_${ch.num}`;
+  const idx=likedBy.indexOf(key);
+  if(idx===-1){likedBy.push(key);likes[key]=(likes[key]||0)+1;showToast('❤️ Disukai!');}
+  else{likedBy.splice(idx,1);likes[key]=Math.max(0,(likes[key]||1)-1);}
+  const liked=likedBy.includes(key);
+  document.getElementById('likeCount').textContent=likes[key]||0;
+  document.getElementById('likeBtn').classList.toggle('liked',liked);
+  document.getElementById('likeBtn').querySelector('.heart').textContent=liked?'❤️':'🤍';
+  save();renderChapList();
+}
+
+/* ══ SUBSCRIBE ══ */
+function toggleSub(){
+  const id=currentComic.id;
+  const idx=subscribed.indexOf(id);
+  if(idx===-1){subscribed.push(id);showToast(`✅ Subscribe ${currentComic.title}!`);addNotif(id,`Chapter baru ${currentComic.title} akan muncul di notifikasi kamu.`);}
+  else{subscribed.splice(idx,1);showToast('Unsubscribe.');}
+  save();updateSubBtn();renderGrid();renderHero();
+}
+function toggleSubCard(e,id){
+  e.stopPropagation();
+  const idx=subscribed.indexOf(id);
+  const c=COMICS.find(x=>x.id===id);
+  if(idx===-1){subscribed.push(id);showToast(`✅ Subscribe ${c.title}!`);}
+  else{subscribed.splice(idx,1);showToast('Unsubscribe.');}
+  save();renderGrid();renderHero();
+  if(currentComic?.id===id)updateSubBtn();
+}
+function updateSubBtn(){
+  const sub=subscribed.includes(currentComic.id);
+  const b=document.getElementById('subBtn');
+  b.textContent=sub?'✅ Diikuti':'＋ Subscribe';
+  b.classList.toggle('subbed',sub);
+}
+
+/* ══ BOOKMARK ══ */
+function toggleBm(){
+  const id=currentComic.id;const idx=bookmarks.indexOf(id);
+  if(idx===-1){bookmarks.push(id);showToast('🔖 Ditambah ke bookmark!');}
+  else{bookmarks.splice(idx,1);showToast('Dihapus dari bookmark.');}
+  save();updateBmBtn();renderGrid();
+}
+function updateBmBtn(){
+  const bm=bookmarks.includes(currentComic.id);
+  const b=document.getElementById('bmBtn');
+  b.textContent=bm?'🔖 Tersimpan':'🤍 Bookmark';
+  b.classList.toggle('saved',bm);
+}
+
+/* ══ COMMENTS ══ */
+function renderComments(){
+  const key=currentComic.id;const list=comments[key]||[];
+  document.getElementById('commentAvatar').textContent=USER.initial;
+  document.getElementById('commentList').innerHTML=list.length?list.slice().reverse().map((c,i)=>`
+    <div class="comment-item">
+      <div class="avatar" style="flex-shrink:0">${c.initial}</div>
+      <div class="comment-body">
+        <div class="comment-name">${c.name}<span>${c.time}</span></div>
+        <div class="comment-text">${c.text}</div>
+        <div class="comment-like ${(c.likedBy||[]).includes('me')?'liked':''}" onclick="likeComment(${list.length-1-i})">❤️ ${c.likes||0}</div>
+      </div>
+    </div>`).join(''):
+    '<div class="no-comments">Belum ada komentar. Jadilah yang pertama! 💬</div>';
+}
+function postComment(){
+  const txt=document.getElementById('commentInput').value.trim();
+  if(!txt){showToast('Tulis komentar dulu!',true);return;}
+  const key=currentComic.id;
+  if(!comments[key])comments[key]=[];
+  comments[key].push({name:USER.name,initial:USER.initial,text:txt,time:'Baru saja',likes:0,likedBy:[]});
+  document.getElementById('commentInput').value='';
+  save();renderComments();showToast('Komentar dikirim! 💬');
+}
+function likeComment(idx){
+  const key=currentComic.id;const c=comments[key][idx];if(!c)return;
+  if(!c.likedBy)c.likedBy=[];
+  const i=c.likedBy.indexOf('me');
+  if(i===-1){c.likedBy.push('me');c.likes=(c.likes||0)+1;}
+  else{c.likedBy.splice(i,1);c.likes=Math.max(0,(c.likes||1)-1);}
+  save();renderComments();
+}
+
+/* ══ HISTORY ══ */
+function addHistory(comic,ch){
+  readHistory=readHistory.filter(h=>!(h.id===comic.id&&h.chapNum===ch.num));
+  readHistory.unshift({id:comic.id,chapNum:ch.num,title:comic.title,chTitle:ch.title,cover:comic.cover,ts:Date.now(),total:comic.chapters});
+  if(readHistory.length>30)readHistory=readHistory.slice(0,30);
+  save();
+}
+
+/* ══ NOTIFICATIONS ══ */
+function addNotif(comicId,text){
+  notifications.unshift({id:Date.now(),comicId,text,time:'Baru saja',read:false});
+  save();updateNotifDot();
+}
+function updateNotifDot(){
+  document.getElementById('notifDot').classList.toggle('show',notifications.some(n=>!n.read));
+}
+function renderNotifs(){
+  const list=document.getElementById('notifList');
+  if(!notifications.length){list.innerHTML='<div class="empty-state">Belum ada notifikasi.</div>';return;}
+  list.innerHTML=notifications.map(n=>{
+    const c=COMICS.find(x=>x.id===n.comicId);
+    return `<div class="notif-item" onclick="openModal(${n.comicId});openPanel('notif')">
+      <img class="notif-thumb" src="${c?.cover||''}" alt=""/>
+      <div class="notif-info"><h4>${c?.title||''}</h4><p>${n.text}</p><div class="notif-time">${n.time}</div></div>
+      ${!n.read?'<div class="notif-unread"></div>':''}
+    </div>`;
+  }).join('');
+  notifications.forEach(n=>n.read=true);save();updateNotifDot();
+}
+
+/* ══ PROFILE ══ */
+function renderProfile(){
+  document.getElementById('profileAvatar').textContent=USER.initial;
+  document.getElementById('profileName').textContent=USER.name;
+  document.getElementById('profileEmail').textContent=currentUser?.email||currentUser?.phone||'guest';
+  document.getElementById('profileStats').innerHTML=`
+    <div class="pstat"><div class="pstat-num" style="color:var(--accent2)">${subscribed.length}</div><div class="pstat-label">Diikuti</div></div>
+    <div class="pstat"><div class="pstat-num" style="color:var(--accent)">${bookmarks.length}</div><div class="pstat-label">Bookmark</div></div>
+    <div class="pstat"><div class="pstat-num" style="color:var(--green)">${readHistory.length}</div><div class="pstat-label">Dibaca</div></div>`;
+  const hl=document.getElementById('historyList');
+  if(!readHistory.length){hl.innerHTML='<div class="empty-state">Belum ada riwayat baca.</div>';return;}
+  hl.innerHTML=readHistory.slice(0,8).map(h=>{
+    const pct=Math.round((h.chapNum/h.total)*100);
+    return `<div class="history-item" onclick="openModal(${h.id});openPanel('profile')">
+      <img class="history-thumb" src="${h.cover}" alt="${h.title}"/>
+      <div class="history-info">
+        <h4>${h.title}</h4><p>${h.chTitle}</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ══ PANELS ══ */
+function openPanel(name){
+  if(name==='notif'){
+    const p=document.getElementById('notifPanel');const isOpen=p.classList.contains('open');
+    closeAllPanels();if(!isOpen){p.classList.add('open');renderNotifs();}
+  } else {
+    const p=document.getElementById('profilePanel');const isOpen=p.classList.contains('open');
+    closeAllPanels();if(!isOpen){p.classList.add('open');renderProfile();}
+  }
+}
+function closeAllPanels(){
+  document.getElementById('notifPanel').classList.remove('open');
+  document.getElementById('profilePanel').classList.remove('open');
+}
+function closePanelBg(e,id){if(e.target===document.getElementById(id))closeAllPanels();}
+
+/* ══ TOAST ══ */
+let tt;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ════════════════════════════════════
+   ══ ADMIN PANEL ══
+   ════════════════════════════════════ */
+
+/* Mock traffic data */
+function rnd(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+const TRAFFIC_14D = Array.from({length:14},(_,i)=>{
+  const d=new Date();d.setDate(d.getDate()-(13-i));
+  return {
+    day:d.toLocaleDateString('id-ID',{day:'numeric',month:'short'}),
+    visitors:rnd(800,3200),
+    reads:rnd(400,1800),
+  };
+});
+const HOURLY = Array.from({length:24},(_,i)=>({hour:i,visitors:rnd(i>=8&&i<=22?100:10,i>=8&&i<=22?400:60)}));
+const TRAFFIC_SOURCES=[
+  {src:'Langsung',pct:38,color:'var(--accent2)'},
+  {src:'Google',pct:31,color:'var(--green)'},
+  {src:'Sosial Media',pct:19,color:'var(--accent)'},
+  {src:'Referral',pct:8,color:'var(--yellow)'},
+  {src:'Lainnya',pct:4,color:'var(--muted)'},
+];
+const ACTIVITIES=[
+  {icon:'📖',type:'ai-read',text:'<b>user#4821</b> membaca Shadow Blade Ch.90',time:'2 menit lalu'},
+  {icon:'💬',type:'ai-comment',text:'<b>reader99</b> mengomentari Naga Terakhir',time:'5 menit lalu'},
+  {icon:'❤️',type:'ai-like',text:'<b>anime_fan</b> menyukai Chapter 72 Naga Terakhir',time:'8 menit lalu'},
+  {icon:'📖',type:'ai-read',text:'<b>user#1034</b> membaca Pelukan Terakhir Ch.71',time:'11 menit lalu'},
+  {icon:'✅',type:'ai-new',text:'<b>user#9902</b> subscribe ke Ratu Bintang',time:'14 menit lalu'},
+  {icon:'📖',type:'ai-read',text:'<b>mira_reads</b> membaca Armageddon X Ch.205',time:'18 menit lalu'},
+  {icon:'💬',type:'ai-comment',text:'<b>user#3310</b> mengomentari Cyber Punk Zero',time:'22 menit lalu'},
+  {icon:'❤️',type:'ai-like',text:'<b>komi_fans</b> menyukai Chapter 63 Cinta di Langit',time:'30 menit lalu'},
+];
+
+function openAdmin(){
+  if(!currentUser||currentUser.role!=='admin'){showToast('Akses ditolak!');return;}
+  closeAllPanels();
+  document.getElementById('adminPanel').classList.add('open');
+  document.body.style.overflow='hidden';
+  renderAdminDashboard();
+  // simulate live visitors
+  document.getElementById('liveVisitors').textContent=rnd(42,180);
+  setInterval(()=>{
+    document.getElementById('liveVisitors').textContent=rnd(42,180);
+  },5000);
+}
+function closeAdmin(){
+  document.getElementById('adminPanel').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function switchAdminTab(name){
+  document.querySelectorAll('.anav-btn').forEach((b,i)=>b.classList.toggle('active',['dashboard','traffic','comics','activity'][i]===name));
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(`sec-${name}`).classList.add('active');
+  if(name==='dashboard')renderAdminDashboard();
+  if(name==='traffic')renderTraffic();
+  if(name==='comics')renderAdminComics();
+  if(name==='activity')renderActivity();
+}
+
+/* ── DASHBOARD ── */
+function renderAdminDashboard(){
+  const totalViews=COMICS.reduce((a,c)=>a+c.views,0);
+  const totalComics=COMICS.length;
+  document.getElementById('statGrid').innerHTML=`
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent2)">${totalComics}</div><div class="stat-label">Total Komik</div><div class="stat-change up">↑ +2 bulan ini</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent)">${(totalViews/1000).toFixed(1)}K</div><div class="stat-label">Total Views</div><div class="stat-change up">↑ +12.4%</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--green)">${TRAFFIC_14D[13].visitors.toLocaleString()}</div><div class="stat-label">Pengunjung Hari Ini</div><div class="stat-change up">↑ +8.2%</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--yellow)">3.8K</div><div class="stat-label">Komentar Baru</div><div class="stat-change down">↓ -2.1%</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent2)">${subscribed.length}</div><div class="stat-label">Subscriber</div><div class="stat-change up">↑ +5.7%</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent)">94%</div><div class="stat-label">Uptime</div><div class="stat-change up">↑ stabil</div></div>
+  `;
+
+  // visitors bar chart
+  const maxV=Math.max(...TRAFFIC_14D.map(d=>d.visitors));
+  document.getElementById('visitorChart').innerHTML=TRAFFIC_14D.map(d=>`
+    <div class="chart-bar-wrap">
+      <div class="chart-val" style="font-size:.6rem">${d.visitors>999?(d.visitors/1000).toFixed(1)+'k':d.visitors}</div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;width:100%;gap:2px">
+        <div class="chart-bar" style="height:${Math.round((d.visitors/maxV)*100)}%;background:var(--accent2)" title="${d.visitors} pengunjung"></div>
+        <div class="chart-bar" style="height:${Math.round((d.reads/maxV)*60)}%;background:var(--accent);opacity:.7" title="${d.reads} chapter dibaca"></div>
+      </div>
+      <div class="chart-label">${d.day}</div>
+    </div>`).join('');
+
+  // top comics
+  const sorted=[...COMICS].sort((a,b)=>b.views-a.views).slice(0,5);
+  const maxViews=sorted[0].views;
+  document.getElementById('topComicsList').innerHTML=sorted.map((c,i)=>`
+    <div class="top-comic-item">
+      <div class="top-rank ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</div>
+      <img src="${c.cover}" style="width:32px;height:42px;object-fit:cover;border-radius:5px;flex-shrink:0"/>
+      <div class="top-comic-info">
+        <h4>${c.title}</h4>
+        <p>${c.genre}</p>
+        <div class="top-comic-bar"><div class="top-comic-fill" style="width:${Math.round((c.views/maxViews)*100)}%"></div></div>
+      </div>
+      <div class="top-comic-views">${(c.views/1000).toFixed(1)}K</div>
+    </div>`).join('');
+
+  // genre chart
+  const genreCount={};COMICS.forEach(c=>{genreCount[c.genre]=(genreCount[c.genre]||0)+c.views;});
+  const genres=Object.entries(genreCount).sort((a,b)=>b[1]-a[1]);
+  const maxG=genres[0][1];
+  const gColors=['var(--accent2)','var(--accent)','var(--green)','var(--yellow)','#06b6d4','#ec4899','#f97316'];
+  document.getElementById('genreChart').innerHTML=genres.map(([g,v],i)=>`
+    <div class="chart-bar-wrap">
+      <div class="chart-val" style="font-size:.6rem">${(v/1000).toFixed(0)}K</div>
+      <div class="chart-bar" style="height:${Math.round((v/maxG)*100)}%;background:${gColors[i%gColors.length]}" title="${g}: ${v}"></div>
+      <div class="chart-label">${g}</div>
+    </div>`).join('');
+}
+
+/* ── TRAFFIC ── */
+function renderTraffic(){
+  const todayV=TRAFFIC_14D[13].visitors;
+  const yesterdayV=TRAFFIC_14D[12].visitors;
+  const diff=todayV-yesterdayV;
+  document.getElementById('trafficStatGrid').innerHTML=`
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent2)">${todayV.toLocaleString()}</div><div class="stat-label">Pengunjung Hari Ini</div><div class="stat-change ${diff>=0?'up':'down'}">${diff>=0?'↑':'↓'} ${Math.abs(diff)} dari kemarin</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--green)">${TRAFFIC_14D.slice(-7).reduce((a,d)=>a+d.visitors,0).toLocaleString()}</div><div class="stat-label">7 Hari Terakhir</div><div class="stat-change up">↑ +6.3%</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--yellow)">00:04:32</div><div class="stat-label">Avg. Durasi</div><div class="stat-change up">↑ +12s</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--accent)">62%</div><div class="stat-label">Pembaca Kembali</div><div class="stat-change up">↑ +3.1%</div></div>
+  `;
+
+  // hourly
+  const maxH=Math.max(...HOURLY.map(h=>h.visitors));
+  document.getElementById('hourlyChart').innerHTML=HOURLY.map(h=>`
+    <div class="chart-bar-wrap">
+      <div class="chart-bar" style="height:${Math.round((h.visitors/maxH)*100)}%;background:var(--accent2)" title="${h.hour}:00 - ${h.visitors}"></div>
+      <div class="chart-label">${h.hour%4===0?h.hour+'h':''}</div>
+    </div>`).join('');
+
+  // traffic sources
+  document.getElementById('trafficSource').innerHTML=TRAFFIC_SOURCES.map(s=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="width:10px;height:10px;border-radius:50%;background:${s.color};flex-shrink:0"></div>
+      <div style="flex:1;font-size:.85rem">${s.src}</div>
+      <div style="flex:2;background:var(--card);border-radius:99px;height:6px;overflow:hidden">
+        <div style="height:100%;width:${s.pct}%;background:${s.color};border-radius:99px"></div>
+      </div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--sub);width:36px;text-align:right">${s.pct}%</div>
+    </div>`).join('');
+
+  // top pages
+  const pages=[
+    {title:'Naga Terakhir – Chapter 148',views:rnd(800,1200)},
+    {title:'Shadow Blade – Chapter 92',views:rnd(600,900)},
+    {title:'Pelukan Terakhir – Chapter 72',views:rnd(500,800)},
+    {title:'Beranda (index)',views:rnd(400,700)},
+    {title:'Ratu Bintang – Chapter 88',views:rnd(300,600)},
+  ];
+  document.getElementById('topPages').innerHTML=pages.map((p,i)=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="font-family:'Bangers',cursive;font-size:1.3rem;color:var(--muted);width:24px">${i+1}</div>
+      <div style="flex:1;font-size:.84rem">${p.title}</div>
+      <div style="font-size:.82rem;font-weight:700;color:var(--accent2)">${p.views.toLocaleString()} views</div>
+    </div>`).join('');
+}
+
+/* ── COMICS MANAGEMENT ── */
+function renderAdminComics(){
+  document.getElementById('comicCount').textContent=`(${COMICS.length} komik)`;
+  const statusColor={ongoing:'var(--green)',completed:'var(--accent2)',hiatus:'var(--yellow)'};
+  document.getElementById('adminComicBody').innerHTML=COMICS.map(c=>`
+    <tr>
+      <td><img class="td-cover" src="${c.cover}" alt="${c.title}"/></td>
+      <td style="font-weight:600">${c.title}</td>
+      <td><span class="td-badge">${c.genre}</span></td>
+      <td>⭐ ${c.rating}</td>
+      <td>${c.chapters} ch</td>
+      <td>${(c.views/1000).toFixed(1)}K</td>
+      <td>
+        <div class="td-actions">
+          <button class="btn-edit" onclick="openEditModal(${c.id})">✏️ Edit</button>
+          <button class="btn-del" onclick="deleteComic(${c.id})">🗑️ Hapus</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+/* ── EDIT MODAL ── */
+function openEditModal(id){
+  document.getElementById('editModalBg').classList.add('open');
+  if(id===null){
+    document.getElementById('editModalTitle').textContent='Tambah Komik Baru';
+    ['editId','editTitle','editRating','editChapters','editCover','editDesc'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('editGenre').value='action';
+    document.getElementById('editStatus').value='ongoing';
+  } else {
+    const c=COMICS.find(x=>x.id===id);if(!c)return;
+    document.getElementById('editModalTitle').textContent='Edit Komik';
+    document.getElementById('editId').value=c.id;
+    document.getElementById('editTitle').value=c.title;
+    document.getElementById('editGenre').value=c.genre;
+    document.getElementById('editRating').value=c.rating;
+    document.getElementById('editChapters').value=c.chapters;
+    document.getElementById('editStatus').value=c.status||'ongoing';
+    document.getElementById('editCover').value=c.cover;
+    document.getElementById('editDesc').value=c.desc||'';
+  }
+}
+function closeEditModal(){document.getElementById('editModalBg').classList.remove('open');}
+
+function saveComic(){
+  const id=parseInt(document.getElementById('editId').value)||null;
+  const title=document.getElementById('editTitle').value.trim();
+  const genre=document.getElementById('editGenre').value;
+  const rating=parseFloat(document.getElementById('editRating').value)||4.0;
+  const chapters=parseInt(document.getElementById('editChapters').value)||1;
+  const status=document.getElementById('editStatus').value;
+  const cover=document.getElementById('editCover').value.trim()||`https://picsum.photos/seed/knew${Date.now()}/300/400`;
+  const desc=document.getElementById('editDesc').value.trim();
+  if(!title){showToast('Judul tidak boleh kosong!');return;}
+
+  if(id){
+    const idx=COMICS.findIndex(c=>c.id===id);
+    if(idx!==-1){Object.assign(COMICS[idx],{title,genre,rating,chapters,status,cover,desc});}
+    showToast('✅ Komik berhasil diperbarui!');
+  } else {
+    const newId=Math.max(...COMICS.map(c=>c.id))+1;
+    COMICS.push({id:newId,title,genre,rating,chapters,status,cover,desc,views:0,
+      pages:["https://picsum.photos/seed/pgnew1/800/1200","https://picsum.photos/seed/pgnew2/800/1200"]});
+    showToast('✅ Komik baru ditambahkan!');
+  }
+  closeEditModal();
+  renderAdminComics();
+  renderGrid();renderHero();
+}
+
+function deleteComic(id){
+  const idx=COMICS.findIndex(c=>c.id===id);
+  if(idx===-1)return;
+  const name=COMICS[idx].title;
+  COMICS.splice(idx,1);
+  showToast(`🗑️ "${name}" dihapus.`);
+  renderAdminComics();renderGrid();renderHero();
+}
+
+/* ── ACTIVITY ── */
+function renderActivity(){
+  document.getElementById('activityFeed').innerHTML=ACTIVITIES.map(a=>`
+    <div class="activity-item">
+      <div class="activity-icon ${a.type}">${a.icon}</div>
+      <div class="activity-info">
+        <p>${a.text}</p>
+        <span>${a.time}</span>
+      </div>
+    </div>`).join('');
+}
+
+/* ══ INIT ══ */
+updateNotifDot();
+</script>
+</body>
+</html>
