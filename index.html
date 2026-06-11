@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>INKDROP</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:#0d0d10;--surface:#13131a;--card:#1c1c26;--border:#2e2e3e;
+  --muted:#64648a;--text:#e8e8f2;--sub:#9898b8;
+  --accent:#ff4d6d;--accent2:#7c3aed;--green:#22c55e;--yellow:#f59e0b;
+  --radius:12px;--shadow:0 4px 24px rgba(0,0,0,.45);
+}
+[data-theme="light"]{
+  --bg:#f0f0f6;--surface:#f8f8fc;--card:#fff;--border:#e0e0ee;
+  --muted:#9090b0;--text:#111118;--sub:#55558a;--shadow:0 4px 24px rgba(0,0,0,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+button{cursor:pointer;font:inherit;border:none;background:none}
+input,textarea{font:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;gap:12px;
+  padding:0 20px;height:58px;
+  background:var(--surface);border-bottom:1px solid var(--border);
+}
+.logo{font-family:'Bangers',cursive;font-size:1.6rem;letter-spacing:.06em;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;white-space:nowrap}
+.search-wrap{flex:1;max-width:440px;display:flex;align-items:center;
+  background:var(--card);border:1px solid var(--border);border-radius:99px;padding:0 14px;gap:8px}
+.search-wrap svg{color:var(--muted);flex-shrink:0}
+.search-wrap input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:.88rem;padding:9px 0}
+.search-wrap input::placeholder{color:var(--muted)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.icon-btn{position:relative;width:38px;height:38px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  display:grid;place-items:center;font-size:1.1rem;transition:background .2s}
+.icon-btn:hover{background:var(--border)}
+.notif-dot{position:absolute;top:5px;right:5px;width:8px;height:8px;
+  border-radius:50%;background:var(--accent);border:2px solid var(--surface);display:none}
+.notif-dot.show{display:block}
+.profile-btn{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;
+  border-radius:99px;background:var(--card);border:1px solid var(--border);transition:background .2s}
+.profile-btn:hover{background:var(--border)}
+.avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid;place-items:center;font-size:.8rem;font-weight:700;color:#fff;flex-shrink:0}
+.profile-btn span{font-size:.83rem;font-weight:600}
+
+/* ── GENRE BAR ── */
+.genre-bar{display:flex;gap:8px;padding:12px 20px;overflow-x:auto;scrollbar-width:none;
+  background:var(--surface);border-bottom:1px solid var(--border)}
+.genre-bar::-webkit-scrollbar{display:none}
+.pill{flex-shrink:0;padding:5px 15px;border-radius:99px;font-size:.8rem;font-weight:600;
+  background:var(--card);border:1px solid var(--border);color:var(--sub);transition:all .2s}
+.pill:hover,.pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── MAIN ── */
+.main{padding:22px 20px;max-width:1280px;margin:0 auto}
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sec-title{font-family:'Bangers',cursive;font-size:1.4rem;letter-spacing:.04em;
+  display:flex;align-items:center;gap:8px}
+.hot-badge{font-family:'Inter';font-size:.72rem;font-weight:700;
+  background:var(--accent);color:#fff;padding:2px 8px;border-radius:99px;letter-spacing:0}
+
+/* hero */
+.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}
+@media(max-width:860px){.hero-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.hero-grid{grid-template-columns:1fr}}
+.hero-card{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:2/1;cursor:pointer}
+.hero-card img{width:100%;height:100%;object-fit:cover;transition:transform .4s;display:block}
+.hero-card:hover img{transform:scale(1.05)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 55%);
+  display:flex;flex-direction:column;justify-content:flex-end;padding:16px}
+.hero-genre{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);margin-bottom:3px}
+.hero-title{font-family:'Bangers',cursive;font-size:1.25rem;color:#fff;letter-spacing:.03em}
+.hero-meta{font-size:.74rem;color:rgba(255,255,255,.6);margin-top:3px}
+
+/* comic grid */
+.comic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:16px;margin-bottom:36px}
+.comic-card{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);
+  overflow:hidden;cursor:pointer;transition:transform .22s,box-shadow .22s}
+.comic-card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.cc-thumb{position:relative;aspect-ratio:3/4;overflow:hidden}
+.cc-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .35s;display:block}
+.comic-card:hover .cc-thumb img{transform:scale(1.06)}
+.sub-badge{position:absolute;top:8px;left:8px;background:var(--accent2);color:#fff;
+  font-size:.66rem;font-weight:700;padding:2px 7px;border-radius:99px;display:none}
+.sub-badge.show{display:block}
+.genre-tag{position:absolute;bottom:8px;left:8px;font-size:.66rem;font-weight:700;
+  text-transform:uppercase;background:var(--accent);color:#fff;padding:2px 8px;border-radius:99px}
+.sub-btn-card{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);
+  border-radius:8px;padding:4px 8px;font-size:.75rem;font-weight:700;color:#fff;
+  backdrop-filter:blur(4px);opacity:0;transition:opacity .2s;border:1px solid rgba(255,255,255,.15)}
+.comic-card:hover .sub-btn-card{opacity:1}
+.sub-btn-card.subbed{opacity:1;background:var(--accent2);border-color:var(--accent2)}
+.cc-info{padding:9px 11px 11px}
+.cc-info h4{font-size:.86rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.cc-meta{font-size:.73rem;color:var(--muted);display:flex;justify-content:space-between}
+.star{color:var(--yellow);margin-right:1px}
+
+/* no result */
+.no-result{text-align:center;color:var(--muted);padding:50px 0;display:none}
+.no-result .big{font-size:2.8rem}
+
+/* ── READER MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(5px);
+  overflow-y:auto;padding:16px;align-items:flex-start;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);
+  border-radius:18px;width:100%;max-width:800px;margin:auto;
+  animation:popUp .24s ease}
+@keyframes popUp{from{opacity:0;transform:scale(.94) translateY(10px)}to{opacity:1;transform:none}}
+
+/* comic info header */
+.comic-info-bar{display:flex;gap:14px;padding:18px 20px;border-bottom:1px solid var(--border)}
+.ci-cover{width:72px;height:96px;object-fit:cover;border-radius:10px;flex-shrink:0}
+.ci-detail{flex:1}
+.ci-title{font-family:'Bangers',cursive;font-size:1.35rem;letter-spacing:.03em;margin-bottom:4px}
+.ci-meta{font-size:.78rem;color:var(--sub);margin-bottom:8px}
+.ci-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-sub{display:flex;align-items:center;gap:6px;padding:7px 16px;border-radius:99px;
+  font-size:.82rem;font-weight:700;transition:all .2s;
+  background:var(--accent2);color:#fff;border:1px solid var(--accent2)}
+.btn-sub.subbed{background:var(--card);color:var(--sub);border-color:var(--border)}
+.btn-bm{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:99px;
+  font-size:.82rem;font-weight:600;background:var(--card);border:1px solid var(--border);color:var(--sub);transition:all .2s}
+.btn-bm.saved{background:var(--accent);color:#fff;border-color:var(--accent)}
+.close-modal{margin-left:auto;width:36px;height:36px;border-radius:50%;
+  background:var(--card);border:1px solid var(--border);
+  display:grid;place-items:center;font-size:1rem;color:var(--sub);flex-shrink:0;transition:background .2s}
+.close-modal:hover{background:var(--border);color:var(--text)}
+
+/* tabs */
+.modal-tabs{display:flex;border-bottom:1px solid var(--border)}
+.tab-btn{flex:1;padding:13px;font-size:.85rem;font-weight:600;color:var(--muted);
+  border-bottom:2px solid transparent;transition:all .2s}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none;padding:18px 20px}
+.tab-content.active{display:block}
+
+/* chapter list */
+.chap-head{font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px}
+.chap-item{display:flex;align-items:center;justify-content:space-between;
+  padding:11px 14px;border-radius:10px;cursor:pointer;transition:background .18s;
+  border-bottom:1px solid var(--border)}
+.chap-item:last-child{border-bottom:none}
+.chap-item:hover{background:var(--card)}
+.chap-item.active{background:var(--accent2)!important}
+.chap-item.active .chap-title,.chap-item.active .chap-right{color:#fff!important}
+.chap-title{font-size:.87rem;font-weight:600}
+.chap-right{display:flex;align-items:center;gap:10px;font-size:.75rem;color:var(--muted)}
+.chap-likes{display:flex;align-items:center;gap:4px}
+.chap-read{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;display:none}
+.chap-read.show{display:block}
+
+/* reader */
+.reader-wrap{display:none}
+.reader-wrap.open{display:block;padding:0 20px 20px}
+.reader-topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;margin-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.reader-topbar .ch-label{font-size:.88rem;font-weight:700}
+.reader-nav-btns{display:flex;gap:8px}
+.rnav{padding:7px 14px;border-radius:99px;font-size:.8rem;font-weight:600;
+  background:var(--card);border:1px solid var(--border);color:var(--sub);transition:all .2s}
+.rnav:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.reader-pages{display:flex;flex-direction:column;gap:2px}
+.reader-pages img{width:100%;display:block}
+.reader-actions{display:flex;align-items:center;justify-content:center;gap:16px;
+  padding:20px 0;border-top:1px solid var(--border);margin-top:16px}
+.like-btn{display:flex;align-items:center;gap:8px;padding:10px 22px;border-radius:99px;
+  background:var(--card);border:1px solid var(--border);font-size:.88rem;font-weight:700;
+  color:var(--sub);transition:all .22s}
+.like-btn.liked{background:rgba(255,77,109,.12);border-color:var(--accent);color:var(--accent)}
+.like-btn .heart{font-size:1.1rem;transition:transform .22s}
+.like-btn.liked .heart{transform:scale(1.3)}
+
+/* comments */
+.comment-input-wrap{display:flex;gap:10px;margin-bottom:18px;align-items:flex-start}
+.comment-input-wrap .avatar{flex-shrink:0;margin-top:2px}
+.comment-input-wrap textarea{flex:1;background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:10px 14px;color:var(--text);resize:none;
+  font-size:.86rem;outline:none;transition:border-color .2s;min-height:68px}
+.comment-input-wrap textarea:focus{border-color:var(--accent2)}
+.comment-input-wrap textarea::placeholder{color:var(--muted)}
+.btn-comment{padding:8px 18px;border-radius:99px;
+  background:var(--accent2);color:#fff;font-weight:700;font-size:.82rem;transition:opacity .2s}
+.btn-comment:hover{opacity:.85}
+.comment-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+.comment-item:last-child{border-bottom:none}
+.comment-body{flex:1}
+.comment-name{font-size:.82rem;font-weight:700;margin-bottom:3px}
+.comment-name span{font-size:.72rem;color:var(--muted);font-weight:400;margin-left:6px}
+.comment-text{font-size:.85rem;color:var(--sub);line-height:1.55}
+.comment-like{display:flex;align-items:center;gap:5px;margin-top:6px;
+  font-size:.76rem;color:var(--muted);cursor:pointer;width:fit-content;transition:color .18s}
+.comment-like:hover,.comment-like.liked{color:var(--accent)}
+.no-comments{text-align:center;color:var(--muted);font-size:.85rem;padding:24px 0}
+
+/* ── NOTIF PANEL ── */
+.side-panel{display:none;position:fixed;inset:0;z-index:300;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);justify-content:flex-end}
+.side-panel.open{display:flex}
+.side-drawer{background:var(--surface);border-left:1px solid var(--border);
+  width:320px;height:100vh;overflow-y:auto;padding:20px;
+  animation:slideIn .22s ease}
+@keyframes slideIn{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.drawer-title{font-family:'Bangers',cursive;font-size:1.35rem;letter-spacing:.04em}
+.drawer-close{width:32px;height:32px;border-radius:50%;background:var(--card);
+  border:1px solid var(--border);display:grid;place-items:center;color:var(--sub);font-size:1rem}
+.drawer-close:hover{background:var(--border)}
+.notif-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.notif-item:last-child{border-bottom:none}
+.notif-item:hover{opacity:.8}
+.notif-thumb{width:42px;height:56px;object-fit:cover;border-radius:7px;flex-shrink:0}
+.notif-info h4{font-size:.84rem;font-weight:700}
+.notif-info p{font-size:.76rem;color:var(--muted);margin-top:2px}
+.notif-info .notif-time{font-size:.7rem;color:var(--muted);margin-top:4px}
+.notif-unread{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:5px}
+.empty-state{text-align:center;color:var(--muted);font-size:.85rem;padding:32px 0}
+
+/* ── PROFILE PANEL ── */
+.profile-header{text-align:center;padding-bottom:18px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.profile-avatar{width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid;place-items:center;font-size:1.5rem;font-weight:700;color:#fff;margin:0 auto 10px}
+.profile-name{font-weight:700;font-size:1rem}
+.profile-sub{font-size:.78rem;color:var(--muted);margin-top:2px}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.pstat{background:var(--card);border:1px solid var(--border);border-radius:10px;
+  padding:12px;text-align:center}
+.pstat-num{font-family:'Bangers',cursive;font-size:1.3rem}
+.pstat-label{font-size:.7rem;color:var(--muted);margin-top:1px}
+.history-item{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.history-item:last-child{border-bottom:none}
+.history-item:hover{opacity:.8}
+.history-thumb{width:38px;height:50px;object-fit:cover;border-radius:6px;flex-shrink:0}
+.history-info h4{font-size:.83rem;font-weight:700}
+.history-info p{font-size:.74rem;color:var(--muted);margin-top:2px}
+.progress-bar{height:3px;background:var(--border);border-radius:99px;margin-top:5px}
+.progress-fill{height:100%;background:var(--accent2);border-radius:99px}
+
+/* toast */
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--accent2);color:#fff;border-radius:99px;padding:9px 20px;
+  font-size:.84rem;font-weight:600;opacity:0;pointer-events:none;z-index:999;
+  transition:opacity .3s,transform .3s}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo">INKDROP</div>
+  <div class="search-wrap">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Cari komik…" oninput="applyFilters()"/>
+  </div>
+  <div class="tb-right">
+    <button class="icon-btn" title="Notifikasi" onclick="openPanel('notif')">
+      🔔<span class="notif-dot show" id="notifDot"></span>
+    </button>
+    <button class="icon-btn" title="Ganti tema" id="themeBtn">🌙</button>
+    <button class="profile-btn" onclick="openPanel('profile')">
+      <div class="avatar" id="topAvatar">K</div>
+      <span id="topName">Kamu</span>
+    </button>
+  </div>
+</header>
+
+<!-- GENRE BAR -->
+<nav class="genre-bar" id="genreBar">
+  <button class="pill active" data-genre="all">Semua</button>
+  <button class="pill" data-genre="action">Action</button>
+  <button class="pill" data-genre="romance">Romance</button>
+  <button class="pill" data-genre="fantasy">Fantasy</button>
+  <button class="pill" data-genre="horror">Horror</button>
+  <button class="pill" data-genre="comedy">Comedy</button>
+  <button class="pill" data-genre="sci-fi">Sci-Fi</button>
+  <button class="pill" data-genre="drama">Drama</button>
+</nav>
+
+<!-- MAIN -->
+<main class="main">
+  <section style="margin-bottom:32px">
+    <div class="sec-head">
+      <div class="sec-title">Trending <span class="hot-badge">HOT</span></div>
+    </div>
+    <div class="hero-grid" id="heroGrid"></div>
+  </section>
+  <section>
+    <div class="sec-head">
+      <div class="sec-title">Semua Komik</div>
+      <div style="font-size:.8rem;color:var(--muted)" id="resultCount"></div>
+    </div>
+    <div class="comic-grid" id="comicGrid"></div>
+    <div class="no-result" id="noResult"><div class="big">😶</div><p>Tidak ditemukan.</p></div>
+  </section>
+</main>
+
+<!-- READER MODAL -->
+<div class="modal-bg" id="readerModal">
+  <div class="modal">
+    <!-- comic info -->
+    <div class="comic-info-bar">
+      <img class="ci-cover" id="ciCover" src="" alt=""/>
+      <div class="ci-detail">
+        <div class="ci-title" id="ciTitle"></div>
+        <div class="ci-meta" id="ciMeta"></div>
+        <div class="ci-actions">
+          <button class="btn-sub" id="subBtn" onclick="toggleSub()">＋ Subscribe</button>
+          <button class="btn-bm" id="bmBtn" onclick="toggleBm()">🤍 Bookmark</button>
+        </div>
+      </div>
+      <button class="close-modal" onclick="closeModal()">✕</button>
+    </div>
+    <!-- tabs -->
+    <div class="modal-tabs">
+      <button class="tab-btn active" onclick="switchTab('chapters')">📋 Chapter</button>
+      <button class="tab-btn" onclick="switchTab('comments')">💬 Komentar</button>
+    </div>
+    <!-- chapter list -->
+    <div class="tab-content active" id="tab-chapters">
+      <div class="chap-head">Pilih Chapter</div>
+      <div id="chapList"></div>
+    </div>
+    <!-- comments -->
+    <div class="tab-content" id="tab-comments">
+      <div class="comment-input-wrap">
+        <div class="avatar" id="commentAvatar">K</div>
+        <div style="flex:1">
+          <textarea id="commentInput" placeholder="Tulis komentar…" rows="2"></textarea>
+          <div style="display:flex;justify-content:flex-end;margin-top:6px">
+            <button class="btn-comment" onclick="postComment()">Kirim</button>
+          </div>
+        </div>
+      </div>
+      <div id="commentList"></div>
+    </div>
+    <!-- reader -->
+    <div class="reader-wrap" id="readerWrap">
+      <div class="reader-topbar">
+        <button class="rnav" onclick="prevChap()">← Prev</button>
+        <span class="ch-label" id="readerLabel"></span>
+        <div class="reader-nav-btns">
+          <button class="rnav" onclick="backToChapList()">📋 List</button>
+          <button class="rnav" onclick="nextChap()">Next →</button>
+        </div>
+      </div>
+      <div class="reader-pages" id="readerPages"></div>
+      <div class="reader-actions">
+        <button class="like-btn" id="likeBtn" onclick="toggleLike()">
+          <span class="heart">🤍</span>
+          <span id="likeCount">0</span> Suka
+        </button>
+        <button class="rnav" onclick="switchTab('comments');backToChapList();setTimeout(()=>document.getElementById('tab-comments').classList.add('active'),50)">💬 Komentar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIF PANEL -->
+<div class="side-panel" id="notifPanel" onclick="closePanelBg(event,'notifPanel')">
+  <div class="side-drawer">
+    <div class="drawer-head">
+      <div class="drawer-title">🔔 Notifikasi</div>
+      <button class="drawer-close" onclick="openPanel('notif')">✕</button>
+    </div>
+    <div id="notifList"></div>
+  </div>
+</div>
+
+<!-- PROFILE PANEL -->
+<div class="side-panel" id="profilePanel" onclick="closePanelBg(event,'profilePanel')">
+  <div class="side-drawer">
+    <div class="drawer-head">
+      <div class="drawer-title">👤 Profil</div>
+      <button class="drawer-close" onclick="openPanel('profile')">✕</button>
+    </div>
+    <div class="profile-header">
+      <div class="profile-avatar" id="profileAvatar">K</div>
+      <div class="profile-name" id="profileName">Komik Reader</div>
+      <div class="profile-sub">Member sejak Juni 2025</div>
+    </div>
+    <div class="profile-stats" id="profileStats"></div>
+    <div style="font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:10px">Riwayat Baca</div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══ DATA ══ */
+const COMICS = [
+  {id:1,title:"Naga Terakhir",genre:"fantasy",rating:4.9,chapters:148,cover:"https://picsum.photos/seed/k1/300/400",pages:["https://picsum.photos/seed/pg1a/800/1200","https://picsum.photos/seed/pg1b/800/1200","https://picsum.photos/seed/pg1c/800/1200"]},
+  {id:2,title:"Shadow Blade",genre:"action",rating:4.7,chapters:92,cover:"https://picsum.photos/seed/k2/300/400",pages:["https://picsum.photos/seed/pg2a/800/1200","https://picsum.photos/seed/pg2b/800/1200"]},
+  {id:3,title:"Cinta di Langit Ke-7",genre:"romance",rating:4.8,chapters:64,cover:"https://picsum.photos/seed/k3/300/400",pages:["https://picsum.photos/seed/pg3a/800/1200","https://picsum.photos/seed/pg3b/800/1200"]},
+  {id:4,title:"Armageddon X",genre:"sci-fi",rating:4.6,chapters:210,cover:"https://picsum.photos/seed/k4/300/400",pages:["https://picsum.photos/seed/pg4a/800/1200","https://picsum.photos/seed/pg4b/800/1200"]},
+  {id:5,title:"Senyum Iblis",genre:"horror",rating:4.5,chapters:77,cover:"https://picsum.photos/seed/k5/300/400",pages:["https://picsum.photos/seed/pg5a/800/1200","https://picsum.photos/seed/pg5b/800/1200"]},
+  {id:6,title:"Ketawa Dulu",genre:"comedy",rating:4.4,chapters:55,cover:"https://picsum.photos/seed/k6/300/400",pages:["https://picsum.photos/seed/pg6a/800/1200","https://picsum.photos/seed/pg6b/800/1200"]},
+  {id:7,title:"Sang Penakluk",genre:"action",rating:4.8,chapters:130,cover:"https://picsum.photos/seed/k7/300/400",pages:["https://picsum.photos/seed/pg7a/800/1200","https://picsum.photos/seed/pg7b/800/1200"]},
+  {id:8,title:"Kisah Dua Hati",genre:"drama",rating:4.3,chapters:40,cover:"https://picsum.photos/seed/k8/300/400",pages:["https://picsum.photos/seed/pg8a/800/1200","https://picsum.photos/seed/pg8b/800/1200"]},
+  {id:9,title:"Ratu Bintang",genre:"fantasy",rating:4.7,chapters:88,cover:"https://picsum.photos/seed/k9/300/400",pages:["https://picsum.photos/seed/pg9a/800/1200","https://picsum.photos/seed/pg9b/800/1200"]},
+  {id:10,title:"Cyber Punk Zero",genre:"sci-fi",rating:4.6,chapters:102,cover:"https://picsum.photos/seed/k10/300/400",pages:["https://picsum.photos/seed/pg10a/800/1200","https://picsum.photos/seed/pg10b/800/1200"]},
+  {id:11,title:"Rumah Tua",genre:"horror",rating:4.5,chapters:35,cover:"https://picsum.photos/seed/k11/300/400",pages:["https://picsum.photos/seed/pg11a/800/1200","https://picsum.photos/seed/pg11b/800/1200"]},
+  {id:12,title:"Pelukan Terakhir",genre:"romance",rating:4.9,chapters:72,cover:"https://picsum.photos/seed/k12/300/400",pages:["https://picsum.photos/seed/pg12a/800/1200","https://picsum.photos/seed/pg12b/800/1200"]},
+];
+
+function genChaps(n){
+  const arr=[];const now=new Date();
+  for(let i=n;i>=Math.max(1,n-14);i--){
+    const d=new Date(now);d.setDate(d.getDate()-(n-i)*3);
+    arr.push({num:i,title:`Chapter ${i}`,date:d.toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'})});
+  }
+  return arr;
+}
+
+/* ══ STATE ══ */
+let bookmarks  = JSON.parse(localStorage.getItem('kz2_bm')||'[]');
+let subscribed = JSON.parse(localStorage.getItem('kz2_sub')||'[]');
+let likes      = JSON.parse(localStorage.getItem('kz2_likes')||'{}');   // {comicId_chapNum: count}
+let likedBy    = JSON.parse(localStorage.getItem('kz2_likedby')||'[]'); // ["id_num"]
+let comments   = JSON.parse(localStorage.getItem('kz2_comments')||'{}');
+let readHistory= JSON.parse(localStorage.getItem('kz2_history')||'[]'); // [{id,chapNum,title,cover,ts}]
+let notifications=JSON.parse(localStorage.getItem('kz2_notifs')||'null')||[
+  {id:1,comicId:1,text:"Chapter 149 Shadow Blade sudah tayang!",time:"2 jam lalu",read:false},
+  {id:2,comicId:3,text:"Cinta di Langit Ke-7 chapter baru!",time:"5 jam lalu",read:false},
+];
+let activeGenre='all',searchQ='';
+let currentComic=null,currentChapIdx=0;
+const USER = {name:"Komik Reader",initial:"K"};
+
+function save(){
+  localStorage.setItem('kz2_bm',JSON.stringify(bookmarks));
+  localStorage.setItem('kz2_sub',JSON.stringify(subscribed));
+  localStorage.setItem('kz2_likes',JSON.stringify(likes));
+  localStorage.setItem('kz2_likedby',JSON.stringify(likedBy));
+  localStorage.setItem('kz2_comments',JSON.stringify(comments));
+  localStorage.setItem('kz2_history',JSON.stringify(readHistory));
+  localStorage.setItem('kz2_notifs',JSON.stringify(notifications));
+}
+
+/* ══ THEME ══ */
+let isDark=true;
+document.getElementById('themeBtn').addEventListener('click',()=>{
+  isDark=!isDark;
+  document.documentElement.dataset.theme=isDark?'dark':'light';
+  document.getElementById('themeBtn').textContent=isDark?'🌙':'☀️';
+});
+
+/* ══ HERO ══ */
+function renderHero(){
+  document.getElementById('heroGrid').innerHTML=COMICS.slice(0,3).map(c=>`
+    <div class="hero-card" onclick="openModal(${c.id})">
+      <img src="${c.cover}" alt="${c.title}" loading="lazy"/>
+      <div class="hero-overlay">
+        <div class="hero-genre">${c.genre}</div>
+        <div class="hero-title">${c.title}</div>
+        <div class="hero-meta">⭐ ${c.rating} · ${c.chapters} ch · ${subscribed.includes(c.id)?'✅ Diikuti':''}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ══ GRID ══ */
+function applyFilters(){
+  searchQ=document.getElementById('searchInput').value;
+  renderGrid();
+}
+function renderGrid(){
+  const list=COMICS.filter(c=>{
+    const mg=activeGenre==='all'||c.genre===activeGenre;
+    const ms=c.title.toLowerCase().includes(searchQ.toLowerCase());
+    return mg&&ms;
+  });
+  document.getElementById('resultCount').textContent=list.length+' komik';
+  document.getElementById('noResult').style.display=list.length?'none':'block';
+  document.getElementById('comicGrid').innerHTML=list.map(c=>{
+    const sub=subscribed.includes(c.id);
+    const bm=bookmarks.includes(c.id);
+    return `<div class="comic-card" onclick="openModal(${c.id})">
+      <div class="cc-thumb">
+        <img src="${c.cover}" alt="${c.title}" loading="lazy"/>
+        <span class="sub-badge ${sub?'show':''}">✅ Diikuti</span>
+        <span class="genre-tag">${c.genre}</span>
+        <button class="sub-btn-card ${sub?'subbed':''}" id="scb-${c.id}" onclick="toggleSubCard(event,${c.id})">${sub?'✅':'＋ Ikuti'}</button>
+      </div>
+      <div class="cc-info">
+        <h4>${c.title}</h4>
+        <div class="cc-meta"><span><span class="star">★</span>${c.rating}</span><span>${c.chapters} ch</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('genreBar').addEventListener('click',e=>{
+  const b=e.target.closest('.pill');if(!b)return;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  b.classList.add('active');activeGenre=b.dataset.genre;renderGrid();
+});
+
+/* ══ MODAL ══ */
+function openModal(id){
+  currentComic=COMICS.find(c=>c.id===id);if(!currentComic)return;
+  document.getElementById('ciCover').src=currentComic.cover;
+  document.getElementById('ciTitle').textContent=currentComic.title;
+  document.getElementById('ciMeta').textContent=`${currentComic.genre.toUpperCase()} · ★ ${currentComic.rating} · ${currentComic.chapters} Chapter`;
+  updateSubBtn();updateBmBtn();
+  renderChapList();renderComments();
+  switchTab('chapters');
+  document.getElementById('readerWrap').classList.remove('open');
+  document.getElementById('readerModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('readerModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('readerModal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('readerModal'))closeModal();
+});
+
+/* ══ TABS ══ */
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',['chapters','comments'][i]===name));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  document.getElementById('readerWrap').classList.remove('open');
+}
+function backToChapList(){
+  document.getElementById('readerWrap').classList.remove('open');
+  switchTab('chapters');
+}
+
+/* ══ CHAPTER LIST ══ */
+function renderChapList(){
+  const chaps=genChaps(currentComic.chapters);
+  document.getElementById('chapList').innerHTML=chaps.map((ch,i)=>{
+    const key=`${currentComic.id}_${ch.num}`;
+    const lc=likes[key]||0;
+    const read=readHistory.some(h=>h.id===currentComic.id&&h.chapNum===ch.num);
+    return `<div class="chap-item ${i===currentChapIdx&&document.getElementById('readerWrap').classList.contains('open')?'active':''}" onclick="openChapter(${i})">
+      <span class="chap-title">${ch.title}</span>
+      <span class="chap-right">
+        <span class="chap-likes">❤️ ${lc}</span>
+        <span>${ch.date}</span>
+        <span class="chap-read ${read?'show':''}" title="Sudah dibaca"></span>
+      </span>
+    </div>`;
+  }).join('');
+}
+
+/* ══ OPEN CHAPTER ══ */
+function openChapter(idx){
+  currentChapIdx=idx;
+  const chaps=genChaps(currentComic.chapters);
+  const ch=chaps[idx];
+  document.getElementById('readerLabel').textContent=`${currentComic.title} — ${ch.title}`;
+  document.getElementById('readerPages').innerHTML=
+    currentComic.pages.map((p,i)=>`<img src="${p}?v=${ch.num}" alt="Hal ${i+1}" loading="lazy"/>`).join('');
+  // likes
+  const key=`${currentComic.id}_${ch.num}`;
+  const lc=likes[key]||0;
+  const liked=likedBy.includes(key);
+  document.getElementById('likeCount').textContent=lc;
+  document.getElementById('likeBtn').classList.toggle('liked',liked);
+  document.getElementById('likeBtn').querySelector('.heart').textContent=liked?'❤️':'🤍';
+  document.getElementById('readerWrap').classList.add('open');
+  document.getElementById('readerWrap').scrollIntoView({behavior:'smooth',block:'start'});
+  // mark as read
+  addHistory(currentComic,ch);
+  renderChapList();
+}
+function prevChap(){const chaps=genChaps(currentComic.chapters);if(currentChapIdx<chaps.length-1)openChapter(currentChapIdx+1);else showToast('Sudah chapter pertama!')}
+function nextChap(){if(currentChapIdx>0)openChapter(currentChapIdx-1);else showToast('Ini chapter terbaru!')}
+
+/* ══ LIKE ══ */
+function toggleLike(){
+  const chaps=genChaps(currentComic.chapters);
+  const ch=chaps[currentChapIdx];
+  const key=`${currentComic.id}_${ch.num}`;
+  const idx=likedBy.indexOf(key);
+  if(idx===-1){likedBy.push(key);likes[key]=(likes[key]||0)+1;showToast('❤️ Disukai!');}
+  else{likedBy.splice(idx,1);likes[key]=Math.max(0,(likes[key]||1)-1);}
+  const liked=likedBy.includes(key);
+  document.getElementById('likeCount').textContent=likes[key]||0;
+  document.getElementById('likeBtn').classList.toggle('liked',liked);
+  document.getElementById('likeBtn').querySelector('.heart').textContent=liked?'❤️':'🤍';
+  save();renderChapList();
+}
+
+/* ══ SUBSCRIBE ══ */
+function toggleSub(){
+  const id=currentComic.id;
+  const idx=subscribed.indexOf(id);
+  if(idx===-1){
+    subscribed.push(id);
+    showToast(`✅ Subscribe ${currentComic.title}!`);
+    addNotif(id,`Chapter baru ${currentComic.title} akan muncul di notifikasi kamu.`);
+  } else {subscribed.splice(idx,1);showToast('Unsubscribe.');}
+  save();updateSubBtn();renderGrid();renderHero();
+}
+function toggleSubCard(e,id){
+  e.stopPropagation();
+  const idx=subscribed.indexOf(id);
+  const c=COMICS.find(x=>x.id===id);
+  if(idx===-1){subscribed.push(id);showToast(`✅ Subscribe ${c.title}!`);}
+  else{subscribed.splice(idx,1);showToast('Unsubscribe.');}
+  save();renderGrid();renderHero();
+  if(currentComic?.id===id)updateSubBtn();
+}
+function updateSubBtn(){
+  const sub=subscribed.includes(currentComic.id);
+  const b=document.getElementById('subBtn');
+  b.textContent=sub?'✅ Diikuti':'＋ Subscribe';
+  b.classList.toggle('subbed',sub);
+}
+
+/* ══ BOOKMARK ══ */
+function toggleBm(){
+  const id=currentComic.id;
+  const idx=bookmarks.indexOf(id);
+  if(idx===-1){bookmarks.push(id);showToast('🔖 Ditambah ke bookmark!');}
+  else{bookmarks.splice(idx,1);showToast('Dihapus dari bookmark.');}
+  save();updateBmBtn();renderGrid();
+}
+function updateBmBtn(){
+  const bm=bookmarks.includes(currentComic.id);
+  const b=document.getElementById('bmBtn');
+  b.textContent=bm?'🔖 Tersimpan':'🤍 Bookmark';
+  b.classList.toggle('saved',bm);
+}
+
+/* ══ COMMENTS ══ */
+function renderComments(){
+  const key=currentComic.id;
+  const list=comments[key]||[];
+  document.getElementById('commentAvatar').textContent=USER.initial;
+  document.getElementById('commentList').innerHTML=list.length?list.slice().reverse().map((c,i)=>`
+    <div class="comment-item">
+      <div class="avatar" style="flex-shrink:0">${c.initial}</div>
+      <div class="comment-body">
+        <div class="comment-name">${c.name}<span>${c.time}</span></div>
+        <div class="comment-text">${c.text}</div>
+        <div class="comment-like ${(c.likedBy||[]).includes('me')?'liked':''}" onclick="likeComment(${list.length-1-i})">
+          ❤️ ${c.likes||0}
+        </div>
+      </div>
+    </div>`).join('') :
+    '<div class="no-comments">Belum ada komentar. Jadilah yang pertama! 💬</div>';
+}
+function postComment(){
+  const txt=document.getElementById('commentInput').value.trim();
+  if(!txt){showToast('Tulis komentar dulu!',true);return;}
+  const key=currentComic.id;
+  if(!comments[key])comments[key]=[];
+  comments[key].push({name:USER.name,initial:USER.initial,text:txt,time:'Baru saja',likes:0,likedBy:[]});
+  document.getElementById('commentInput').value='';
+  save();renderComments();showToast('Komentar dikirim! 💬');
+}
+function likeComment(idx){
+  const key=currentComic.id;
+  const c=comments[key][idx];if(!c)return;
+  if(!c.likedBy)c.likedBy=[];
+  const i=c.likedBy.indexOf('me');
+  if(i===-1){c.likedBy.push('me');c.likes=(c.likes||0)+1;}
+  else{c.likedBy.splice(i,1);c.likes=Math.max(0,(c.likes||1)-1);}
+  save();renderComments();
+}
+
+/* ══ HISTORY ══ */
+function addHistory(comic,ch){
+  readHistory=readHistory.filter(h=>!(h.id===comic.id&&h.chapNum===ch.num));
+  readHistory.unshift({id:comic.id,chapNum:ch.num,title:comic.title,chTitle:ch.title,cover:comic.cover,ts:Date.now(),total:comic.chapters});
+  if(readHistory.length>30)readHistory=readHistory.slice(0,30);
+  save();
+}
+
+/* ══ NOTIFICATIONS ══ */
+function addNotif(comicId,text){
+  const c=COMICS.find(x=>x.id===comicId);
+  notifications.unshift({id:Date.now(),comicId,text,time:'Baru saja',read:false});
+  save();updateNotifDot();
+}
+function updateNotifDot(){
+  const unread=notifications.some(n=>!n.read);
+  document.getElementById('notifDot').classList.toggle('show',unread);
+}
+function renderNotifs(){
+  const list=document.getElementById('notifList');
+  if(!notifications.length){list.innerHTML='<div class="empty-state">Belum ada notifikasi.</div>';return;}
+  list.innerHTML=notifications.map(n=>{
+    const c=COMICS.find(x=>x.id===n.comicId);
+    return `<div class="notif-item" onclick="openModal(${n.comicId});openPanel('notif')">
+      <img class="notif-thumb" src="${c?.cover||''}" alt=""/>
+      <div class="notif-info"><h4>${c?.title||''}</h4><p>${n.text}</p><div class="notif-time">${n.time}</div></div>
+      ${!n.read?'<div class="notif-unread"></div>':''}
+    </div>`;
+  }).join('');
+  notifications.forEach(n=>n.read=true);save();updateNotifDot();
+}
+
+/* ══ PROFILE ══ */
+function renderProfile(){
+  document.getElementById('profileAvatar').textContent=USER.initial;
+  document.getElementById('profileName').textContent=USER.name;
+  document.getElementById('profileStats').innerHTML=`
+    <div class="pstat"><div class="pstat-num" style="color:var(--accent2)">${subscribed.length}</div><div class="pstat-label">Diikuti</div></div>
+    <div class="pstat"><div class="pstat-num" style="color:var(--accent)">${bookmarks.length}</div><div class="pstat-label">Bookmark</div></div>
+    <div class="pstat"><div class="pstat-num" style="color:var(--green)">${readHistory.length}</div><div class="pstat-label">Dibaca</div></div>`;
+  const hl=document.getElementById('historyList');
+  if(!readHistory.length){hl.innerHTML='<div class="empty-state">Belum ada riwayat baca.</div>';return;}
+  hl.innerHTML=readHistory.slice(0,8).map(h=>{
+    const pct=Math.round((h.chapNum/h.total)*100);
+    return `<div class="history-item" onclick="openModal(${h.id});openPanel('profile')">
+      <img class="history-thumb" src="${h.cover}" alt="${h.title}"/>
+      <div class="history-info">
+        <h4>${h.title}</h4>
+        <p>${h.chTitle}</p>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ══ PANELS ══ */
+function openPanel(name){
+  if(name==='notif'){
+    const p=document.getElementById('notifPanel');
+    const isOpen=p.classList.contains('open');
+    closeAllPanels();
+    if(!isOpen){p.classList.add('open');renderNotifs();}
+  } else {
+    const p=document.getElementById('profilePanel');
+    const isOpen=p.classList.contains('open');
+    closeAllPanels();
+    if(!isOpen){p.classList.add('open');renderProfile();}
+  }
+}
+function closeAllPanels(){
+  document.getElementById('notifPanel').classList.remove('open');
+  document.getElementById('profilePanel').classList.remove('open');
+}
+function closePanelBg(e,id){if(e.target===document.getElementById(id))closeAllPanels();}
+
+/* ══ TOAST ══ */
+let tt;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ══ INIT ══ */
+updateNotifDot();
+renderHero();
+renderGrid();
+</script>
+</body>
+</html>
